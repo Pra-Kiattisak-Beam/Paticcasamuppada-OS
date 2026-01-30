@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samsara OS - v1.0 Fixed</title>
+    <title>Samsara OS - v1.1 Fixed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
             font-family: 'Chakra Petch', sans-serif;
             background-color: #0f172a;
             min-height: 100vh;
-            /* แก้ไข: เปิดให้ Scroll ได้อิสระ */
+            /* แก้ไข: ปล่อยให้ Scroll ได้ตามปกติ */
             overflow-y: auto; 
             overflow-x: hidden;
             color: #cbd5e1;
@@ -26,23 +26,27 @@
             border-radius: 20px;
         }
 
-        /* Wheel Container */
+        /* Wheel Styles */
         .cycle-outer {
             position: relative;
             width: 100%;
             aspect-ratio: 1 / 1;
-            max-width: 400px; 
+            max-width: 400px; /* Mobile optimal */
             margin: 0 auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            touch-action: none; /* เฉพาะวงล้อที่ห้าม Scroll เพื่อให้หมุนได้ */
+            touch-action: none; /* สำคัญ: เพื่อให้ลากบนมือถือได้ */
         }
 
         .cycle-container {
             position: relative;
             width: 100%;
             height: 100%;
+            transition: transform 0.1s linear; /* ปรับให้อิงตามนิ้ว */
+        }
+        
+        .cycle-container.snapping {
             transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
@@ -54,7 +58,7 @@
             background: rgba(15, 23, 42, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            transition: all 0.4s ease;
+            transition: all 0.3s ease;
             cursor: pointer;
             z-index: 10;
         }
@@ -106,7 +110,6 @@
         .nav-btn.active { opacity: 1; background: rgba(255,255,255,0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
         .progress-bar { height: 3px; background: currentColor; width: 0%; transition: width 0.1s linear; }
-        
         .mode-info-container { transition: all 0.5s; overflow: hidden; max-height: 200px; opacity: 1; margin-bottom: 1rem; }
         .mode-info-container.collapsed { max-height: 0; opacity: 0; margin-bottom: 0; padding: 0; border: 0; }
         
@@ -115,12 +118,12 @@
             color: #94a3b8; font-size: 13px; padding: 6px 10px; border-radius: 12px; outline: none; 
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        /* Scrollbar Fix */
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
-<!-- แก้ไข: ลบ h-screen และ overflow-hidden ออกจาก body -->
 <body class="p-3 md:p-6 flex flex-col gap-4">
 
     <!-- Header -->
@@ -130,7 +133,7 @@
                 <div id="mode-dot" class="w-3 h-3 rounded-full bg-yellow-500 shadow-[0_0_12px_currentColor] transition-colors duration-500"></div>
                 <h1 class="text-2xl font-bold text-white uppercase leading-none flex items-center gap-2">
                     Samsara OS <span class="text-slate-400 font-normal text-lg">สังสารวัฏ</span>
-                    <span class="text-[10px] text-slate-500 border border-slate-700 px-2 py-0.5 rounded ml-1">v1.0 Fixed</span>
+                    <span class="text-[10px] text-slate-500 border border-slate-700 px-2 py-0.5 rounded ml-1">v1.1</span>
                 </h1>
             </div>
             
@@ -153,11 +156,9 @@
     </header>
 
     <!-- Main Layout -->
-    <!-- แก้ไข: ลบ overflow-hidden และใช้ min-h แทน h-full -->
     <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         <!-- Left: Wheel Section -->
-        <!-- เพิ่ม min-h เพื่อกันเนื้อหายุบ -->
         <section class="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[400px]">
             <div class="cycle-outer" id="cycle-outer">
                 <svg class="connection-lines" id="svg-lines"></svg>
@@ -170,20 +171,19 @@
                     </div>
                 </div>
             </div>
-            <p class="text-[10px] text-slate-500 mt-4 font-mono uppercase tracking-widest opacity-40 absolute bottom-0 lg:bottom-10">Swipe to Rotate</p>
+            <p class="text-[10px] text-slate-500 mt-4 font-mono uppercase tracking-widest opacity-40">หมุนวงล้อเพื่อเล่น (Drag / Swipe)</p>
         </section>
 
         <!-- Right: Detail Section -->
-        <section class="lg:col-span-5 flex flex-col gap-4 relative">
+        <section class="lg:col-span-5 flex flex-col gap-4">
             
-            <!-- Toggle Info Btn -->
             <div class="flex justify-end h-0 relative">
                 <button onclick="toggleModeInfo()" id="info-toggle-btn" class="absolute -top-2 right-2 z-30 p-2 rounded-full bg-slate-800 border border-slate-700 shadow-xl opacity-60 hover:opacity-100 transition-all">
                     <i data-lucide="info" class="w-5 h-5 text-slate-300"></i>
                 </button>
             </div>
 
-            <!-- Objective Box (Collapsible) -->
+            <!-- Objective Box -->
             <div id="mode-info-box" class="mode-info-container zen-panel border-l-4 p-4 shrink-0">
                 <div class="flex justify-between items-start mb-2 pr-8">
                     <span class="text-xs font-mono uppercase text-slate-400 tracking-wider">Objective</span>
@@ -194,7 +194,6 @@
             </div>
 
             <!-- Main Detail Panel -->
-            <!-- ปรับให้สูงตามเนื้อหา ไม่ถูกตัด (h-auto / min-h) -->
             <div class="zen-panel p-6 md:p-8 flex flex-col relative overflow-hidden group min-h-[500px]">
                 <div id="bg-icon-decor" class="absolute -right-6 -bottom-6 opacity-[0.05] transform group-hover:scale-110 transition-all duration-700"></div>
                 
@@ -211,350 +210,8 @@
 
                     <div class="h-px w-full bg-white/10 mb-5 shrink-0"></div>
 
-                    <!-- Scrollable Content (ภายใน Panel) -->
-                    <!-- ปรับ max-h ให้เหมาะสมบนมือถือ -->
-                    <div class="flex-1 space-y-6 overflow-y-auto pr-2 custom-scroll max-h-[60vh] lg:max-h-[500px]">
+                    <!-- Scrollable Content -->
+                    <div class="flex-1 space-y-6 overflow-y-auto pr-2 custom-scroll max-h-[50vh] md:max-h-none">
                         
                         <!-- Scenario -->
-                        <div id="scenario-box" class="hidden bg-green-500/5 rounded-xl p-5 border border-green-500/10 transition-all">
-                            <div class="text-xs font-bold text-green-400 uppercase mb-2 flex items-center gap-2 tracking-widest">
-                                <i data-lucide="play-circle" class="w-4 h-4"></i>
-                                <span id="label-scenario">ตัวอย่างสถานการณ์</span>
-                            </div>
-                            <p id="active-scenario" class="text-base text-green-100/90 leading-relaxed">...</p>
-                        </div>
-
-                        <!-- Dhamma -->
-                        <div class="bg-black/20 rounded-xl p-5 border border-white/5">
-                            <div class="text-xs font-bold text-slate-400 uppercase mb-3 flex items-center gap-2 tracking-widest">
-                                <i data-lucide="book-open" class="w-5 h-5 text-yellow-500"></i>
-                                <span id="label-dhamma">ความหมายทางธรรม</span>
-                            </div>
-                            <p id="active-dhamma" class="text-lg text-slate-200 font-light leading-relaxed">...</p>
-                        </div>
-
-                        <!-- Tech / Credits -->
-                        <div class="bg-blue-500/5 rounded-xl p-5 border border-blue-500/10">
-                            <div class="text-xs font-bold text-blue-300 uppercase mb-3 flex items-center gap-2 tracking-widest">
-                                <i data-lucide="monitor" class="w-5 h-5" id="icon-analogy"></i>
-                                <span id="label-analogy">เปรียบเทียบทางเทคนิค</span>
-                            </div>
-                            <div id="active-analogy" class="text-base text-blue-100/80 font-light leading-relaxed whitespace-pre-line">...</div>
-                        </div>
-                    </div>
-
-                    <!-- Progress Bar -->
-                    <div class="mt-4 pt-3 border-t border-white/5 shrink-0 relative">
-                        <div class="absolute bottom-0 left-0 w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                            <div id="main-progress" class="progress-bar bg-white"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-    </main>
-
-    <script>
-        const nidanas = [
-            { id: 1, pali: "อวิชชา", tech: "Root Bug", icon: "shield-alert", dhamma: "ความไม่รู้แจ้งตามความเป็นจริง ไม่รู้ว่าทุกสิ่งไม่เที่ยง เป็นทุกข์ และไม่ใช่ตัวตน", analogy: "เหมือน 'Windows เถื่อน' ที่มีบั๊กฝังลึกมาตั้งแต่โรงงาน ทำให้โปรแกรมทุกตัวรันผิดพลาดตั้งแต่ฐานราก", scenarios: { FOOD: "หลงคิดว่าการกินของอร่อยคือความสุขที่แท้จริงและยั่งยืน", SOCIAL: "หลงยึดว่าคำด่าในจอคือเรื่องจริงที่ทำร้ายตัวเราได้", SHOPPING: "หลงเชื่อโฆษณาว่าถ้าได้ของชิ้นนี้ชีวิตจะสมบูรณ์แบบ" } },
-            { id: 2, pali: "สังขาร", tech: "Programming", icon: "activity", dhamma: "การปรุงแต่งทางใจ เจตนาที่จะทำ พูด หรือคิด (กรรม)", analogy: "เหมือน 'Programmer' ที่เขียน Code สั่งงานระบบ (เขียนกรรม) จากพื้นฐานที่ผิดพลาด (อวิชชา)", scenarios: { FOOD: "ใจเริ่มคิดปรุงแต่งว่า 'เย็นนี้ต้องกินไก่ทอดร้านนั้นให้ได้'", SOCIAL: "ใจเริ่มคิดคำด่ากลับ เริ่มปรุงแต่งความโกรธ", SHOPPING: "ใจเริ่มวางแผนการเงิน คำนวณความคุ้มค่าเข้าข้างตัวเอง" } },
-            { id: 3, pali: "วิญญาณ", tech: "System Boot", icon: "cpu", dhamma: "การรับรู้อารมณ์ทางตา หู จมูก ลิ้น กาย ใจ", analogy: "เหมือนการกดปุ่ม Power 'เปิดเครื่อง' หน้าจอสว่างขึ้น ระบบปฏิบัติการเริ่มทำงานรับรู้ข้อมูล", scenarios: { FOOD: "จิตตื่นตัวรับรู้ความหิวและความอยาก เตรียมพุ่งไปหาร้าน", SOCIAL: "จิตจดจ่ออยู่กับหน้าจอมือถือ เตรียมพร้อมจะโต้ตอบ", SHOPPING: "จิตพุ่งไปเกาะอยู่ที่สินค้าชิ้นนั้น รับรู้แต่เรื่องของมัน" } },
-            { id: 4, pali: "นามรูป", tech: "Resources", icon: "layers", dhamma: "องค์ประกอบของชีวิต ร่างกาย (รูป) และ จิตใจ (นาม) ที่ทำงานประสานกัน", analogy: "เหมือน Hardware และ Software ที่ต้องทำงานประสานกัน ขาดอย่างใดอย่างหนึ่งเครื่องก็ทำงานไม่ได้", scenarios: { FOOD: "ท้องร้อง (รูป) และใจที่หิว (นาม) ทำงานสอดคล้องกัน", SOCIAL: "มือถือในมือ (รูป) และใจที่ร้อนรุ่ม (นาม) พร้อมทำงาน", SHOPPING: "ตาจ้องสินค้า (รูป) และใจที่ตื่นเต้น (นาม) ประสานงานกัน" } },
-            { id: 5, pali: "สฬายตนะ", tech: "I/O Ports", icon: "eye", dhamma: "ช่องทางเชื่อมต่อโลกภายนอก (ทวาร 6)", analogy: "เหมือน Port เชื่อมต่อ (USB, Wi-Fi) ที่เปิดรอรับสัญญาณข้อมูลจากภายนอกตลอดเวลา", scenarios: { FOOD: "จมูกรับกลิ่น ลิ้นเตรียมรับรส ตาดูเมนูอาหาร", SOCIAL: "ตาจ้องตัวหนังสือ หูรอฟังเสียงแจ้งเตือน", SHOPPING: "ตาดูรูปสินค้า หูฟังรีวิวป้ายยา" } },
-            { id: 6, pali: "ผัสสะ", tech: "Input Trigger", icon: "zap", dhamma: "การกระทบกันของ อายตนะ+วัตถุ+วิญญาณ", analogy: "เหมือนมี Data Packet วิ่งเข้ามาชนที่ Port ทำให้ระบบเกิด Event Trigger ขึ้นมา", scenarios: { FOOD: "กลิ่นไก่ทอดลอยมาเตะจมูก หรือเห็นรูปอาหารน่ากิน", SOCIAL: "ตาเห็นข้อความคอมเมนต์แย่ๆ เด้งขึ้นมาใน Feed", SHOPPING: "ตาเห็นป้าย 'Sale 50%' หรือเห็นสินค้าวางโชว์อยู่" } },
-            { id: 7, pali: "เวทนา", tech: "Sentiment", icon: "heart", dhamma: "ความรู้สึกชอบ (สุข), ไม่ชอบ (ทุกข์), หรือเฉยๆ", analogy: "เหมือนระบบ AI ให้คะแนนข้อมูล (Rating) ว่าเป็นบวก (Like) หรือลบ (Dislike)", scenarios: { FOOD: "รู้สึก 'ชอบ' กลิ่นนี้มาก น้ำลายสอ (สุขเวทนา)", SOCIAL: "รู้สึก 'ไม่พอใจ' อย่างแรง เจ็บใจ (ทุกข์เวทนา)", SHOPPING: "รู้สึก 'ถูกใจ' ตื่นเต้น อยากได้ (สุขเวทนา)" } },
-            { id: 8, pali: "ตัณหา", tech: "Looping", icon: "refresh-cw", dhamma: "ความทะยานอยากได้มา (กาม) อยากเป็น (ภว) หรืออยากผลักไส (วิภว)", analogy: "เหมือนโปรแกรมติด 'Loop' พยายามสั่งดาวน์โหลดไฟล์มาถมเครื่อง หรือพยายามลบไฟล์ทิ้ง", scenarios: { FOOD: "เกิดความอยากกินรุนแรง ต้องกินให้ได้เดี๋ยวนี้!", SOCIAL: "เกิดความอยากด่ากลับ อยากเอาชนะ อยากให้เขารู้สึกบ้าง", SHOPPING: "เกิดความอยากครอบครอง ของมันต้องมี พลาดไม่ได้" } },
-            { id: 9, pali: "อุปาทาน", tech: "Locked", icon: "lock", dhamma: "ความยึดมั่นถือมั่นว่าเป็น 'ตัวกู ของกู'", analogy: "เหมือนการคลิกขวาที่ไฟล์แล้วเลือก 'Lock' ตั้งค่าความเป็นเจ้าของ ห้ามใครแตะต้อง!", scenarios: { FOOD: "ยึดว่า 'ฉัน' หิว, นี่คืออาหาร 'ของฉัน' ใครแย่งไม่ได้", SOCIAL: "ยึดว่า 'ตัวฉัน' ถูกด่า ศักดิ์ศรี 'ของฉัน' ถูกหยาม", SHOPPING: "ยึดว่าฉันต้องเป็นเจ้าของ จินตนาการว่าใส่แล้วเท่" } },
-            { id: 10, pali: "ภพ", tech: "Virtual Env", icon: "database", dhamma: "ภาวะที่จิตก่อตัวเตรียมพร้อมที่จะเกิดพฤติกรรม (Sandbox)", analogy: "เหมือนการสร้างโลกเสมือน (Virtual Machine) ไว้รองรับตัวละครให้ลงไปวิ่งตามบทบาท", scenarios: { FOOD: "จิตหมกมุ่นอยู่กับการกิน ขับรถไปร้าน สั่งอาหาร", SOCIAL: "นิ้วเริ่มพิมพ์ด่ากลับ ใจร้อนรุ่มเป็นไฟ (นรก)", SHOPPING: "กดใส่ตะกร้า เตรียมรูดบัตร ใจไปอยู่ที่ของแล้ว" } },
-            { id: 11, pali: "ชาติ", tech: "Instance", icon: "play", dhamma: "การเกิดของตัวตนผู้เสวยผลอย่างสมบูรณ์", analogy: "เหมือนกด Run โปรแกรม ตัวละครเกิดมาในฉากและรับผลของการกระทำในเกมจริง", scenarios: { FOOD: "ลงมือทานอย่างเอร็ดอร่อย (ตัวกินเกิดแล้ว)", SOCIAL: "โพสต์ด่ากลับไปแล้ว (ตัวโกรธทำงานสมบูรณ์)", SHOPPING: "จ่ายเงิน ได้ของมาถือ (ตัวเจ้าของเกิดแล้ว)" } },
-            { id: 12, pali: "ชรามรณะ", tech: "System Crash", icon: "x-circle", dhamma: "ความเสื่อมสลาย ความพลัดพราก และความดับไปของสิ่งทั้งปวง", analogy: "เหมือนเครื่องร้อนจัดจน 'System Crash' แบตเสื่อม หรือขึ้น 'Blue Screen' แล้วดับไป", scenarios: { FOOD: "อิ่มจนอึดอัด, เงินหมด, อ้วนขึ้น, หรืออาหารหมดแล้วเสียดาย", SOCIAL: "ทะเลาะกันบานปลาย, เสียสุขภาพจิต, โดนแบน, เสียใจภายหลัง", SHOPPING: "เงินหมด, ของตกรุ่นเร็ว, เบื่อของเก่า, เป็นหนี้บัตรเครดิต" } }
-        ];
-
-        const modeInfo = {
-            'LOOP': { targetId: 0, title: 'โหมดวัฏฏะ (Samsara Cycle)', desc: 'แสดงวงจรปกติที่ไหลไปตามกิเลส สร้างทุกข์วนเวียนไม่รู้จบ', color: 'text-yellow-400', border: 'border-l-yellow-500' },
-            'INTERNAL': { targetId: 2, title: 'โหมดหยุดปรุงแต่ง (Stop Fabrication)', desc: 'เป้าหมาย: ตัดที่ "สังขาร" ระงับความคิดปรุงแต่งเจตนา ไม่ให้ก่อกรรม', color: 'text-orange-400', border: 'border-l-orange-500' },
-            'GATEWAY': { targetId: 6, title: 'โหมดสักแต่ว่ารู้ (Pure Input)', desc: 'เป้าหมาย: ตัดที่ "ผัสสะ" สำรวมอินทรีย์หยุดแค่การรับรู้ ไม่รับข้อมูลขยะ', color: 'text-cyan-400', border: 'border-l-cyan-500' },
-            'VEDANA': { targetId: 7, title: 'โหมดรู้ทันเวทนา (Mindfulness)', desc: 'เป้าหมาย: ตัดที่ "เวทนา" รู้ทันสุข/ทุกข์ แต่อุเบกขาไม่หลงไปตามความรู้สึก', color: 'text-purple-400', border: 'border-l-purple-500' },
-            'TANHA': { targetId: 8, title: 'โหมดดับตัณหา (Fading of Craving)', desc: 'เป้าหมาย: ตัดที่ "ตัณหา" ฝึกความคลายกำหนัด ดับความทะยานอยาก', color: 'text-red-400', border: 'border-l-red-500' },
-            'VOID': { targetId: -1, title: 'โหมดสลัดคืน (System Void)', desc: 'เข้าถึง "สุญญตา" คืนธรรมชาติตามจริง ไม่ยึดถือสิ่งใดว่าเป็นเรา', color: 'text-white', border: 'border-l-white' }
-        };
-
-        const CREDIT_TEXT = `ขอขอบพระคุณครูอาจาร์ยทุกๆท่าน ที่เผยแพร่วิชาความรู้ให้เกิดซึ่งปัญญา เพื่อให้ชีวิตนี้ได้หลุดพ้นจากความทุกข์ หรือ หลุดพ้นจากวัฏจักรเวียนไหว้ตายเกิด โดยการละกิเลศให้ได้มากที่สุด\n\nหากมีข้อมูลเนื้อหาใดผิดพลาดต้องขออภัยมา ณ ที่นี่ด้วย\n\nสร้างสรรค์โดย : เกียรติศักดิ์ ทีปวํโส`;
-
-        let currentMode = 'LOOP';
-        let currentScenario = 'NONE';
-        let idx = 0;
-        let rotationAngle = 0; 
-        const CYCLE_TIME = 8000; 
-        let startTime = Date.now();
-        let isDragging = false;
-        let startX = 0;
-        let startAngle = 0;
-        let fadeTimeout;
-
-        function init() {
-            renderCircularNodes();
-            setupInteractions();
-            setMode('LOOP');
-            animate();
-        }
-
-        function renderCircularNodes() {
-            const container = document.getElementById('cycle-container');
-            const outer = document.getElementById('cycle-outer');
-            const svgLines = document.getElementById('svg-lines');
-            
-            container.innerHTML = '';
-            const size = outer.clientWidth;
-            const radius = size / 3.0; 
-            const centerX = size / 2;
-            const centerY = size / 2;
-
-            let lines = '';
-
-            nidanas.forEach((n, i) => {
-                const angle = (i * 30 - 90) * (Math.PI / 180);
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-
-                const node = document.createElement('div');
-                node.className = `cycle-node group`;
-                node.id = `node-${i}`;
-                node.style.left = `${x - 34}px`; 
-                node.style.top = `${y - 34}px`;
-                node.onclick = () => jumpTo(i);
-                node.innerHTML = `
-                    <div class="text-[9px] font-mono text-slate-500 pointer-events-none">0${n.id}</div>
-                    <i data-lucide="${n.icon}" class="w-5 h-5 text-slate-500 icon-el pointer-events-none"></i>
-                    <div class="text-[9px] font-bold text-slate-400 mt-0.5 text-center leading-none pointer-events-none title-el">${n.pali}</div>
-                    <div id="cut-${i}" class="absolute -top-1 -right-1 opacity-0 transition-all scale-50 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow-lg pointer-events-none">CUT</div>
-                `;
-                container.appendChild(node);
-
-                const nextAngle = ((i + 1) * 30 - 90) * (Math.PI / 180);
-                const nextX = centerX + radius * Math.cos(nextAngle);
-                const nextY = centerY + radius * Math.sin(nextAngle);
-                lines += `<line x1="${x}" y1="${y}" x2="${nextX}" y2="${nextY}" stroke="rgba(255,255,255,0.05)" stroke-width="1" />`;
-            });
-            
-            svgLines.innerHTML = lines;
-            lucide.createIcons();
-        }
-
-        function setupInteractions() {
-            const outer = document.getElementById('cycle-outer');
-            const container = document.getElementById('cycle-container');
-
-            const startDrag = (e) => {
-                isDragging = true;
-                startX = e.clientX || e.touches[0].clientX;
-                startAngle = rotationAngle;
-                container.style.transition = 'none';
-            };
-
-            const doDrag = (e) => {
-                if (!isDragging) return;
-                const currentX = e.clientX || e.touches[0].clientX;
-                const deltaX = currentX - startX;
-                rotationAngle = startAngle + (deltaX * 0.5);
-                container.style.transform = `rotate(${rotationAngle}deg)`;
-            };
-
-            const endDrag = () => {
-                isDragging = false;
-                container.style.transition = 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)';
-            };
-
-            outer.addEventListener('mousedown', startDrag);
-            window.addEventListener('mousemove', doDrag);
-            window.addEventListener('mouseup', endDrag);
-            outer.addEventListener('touchstart', startDrag);
-            window.addEventListener('touchmove', doDrag);
-            window.addEventListener('touchend', endDrag);
-        }
-
-        function setMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + mode).classList.add('active');
-            
-            const info = modeInfo[mode];
-            document.getElementById('mode-dot').className = `w-3 h-3 rounded-full shadow-[0_0_12px_currentColor] transition-colors duration-500 ${info.color.replace('text-', 'bg-')}`;
-            document.getElementById('hub-icon').className = `transition-colors duration-500 ${info.color}`;
-
-            showModeInfo(true);
-            idx = 0;
-            startTime = Date.now();
-            updateUI();
-        }
-
-        function showModeInfo(withTimer) {
-            const info = modeInfo[currentMode];
-            const box = document.getElementById('mode-info-box');
-            
-            box.className = `mode-info-container zen-panel border-l-4 p-4 shrink-0 ${info.border}`;
-            box.classList.remove('collapsed');
-            
-            document.getElementById('mode-title').innerText = info.title;
-            document.getElementById('mode-title').className = `text-lg font-bold mb-1 ${info.color}`;
-            document.getElementById('mode-desc').innerText = info.desc;
-
-            if(fadeTimeout) clearTimeout(fadeTimeout);
-            if(withTimer) fadeTimeout = setTimeout(() => box.classList.add('collapsed'), 10000);
-        }
-
-        function toggleModeInfo() {
-            const box = document.getElementById('mode-info-box');
-            if (box.classList.contains('collapsed')) showModeInfo(true);
-            else box.classList.add('collapsed');
-        }
-
-        function changeScenario(val) {
-            currentScenario = val;
-            updateUI();
-        }
-
-        function jumpTo(i) {
-            if(currentMode === 'VOID') return;
-            idx = i;
-            startTime = Date.now();
-            updateUI();
-        }
-
-        function updateUI() {
-            const activeData = nidanas[idx];
-            const info = modeInfo[currentMode];
-            const scenarioBox = document.getElementById('scenario-box');
-            
-            // Rotate Wheel
-            if (!isDragging) {
-                rotationAngle = -(idx * 30);
-                document.getElementById('cycle-container').style.transform = `rotate(${rotationAngle}deg)`;
-            }
-
-            // Right Panel
-            if (currentMode === 'VOID') {
-                document.getElementById('active-pali').innerText = "สุญญตา";
-                document.getElementById('active-tech-label').innerText = "SYSTEM VOID";
-                document.getElementById('active-dhamma').innerText = "ความว่างจากตัวตน คืนสู่ธรรมชาติ ไม่มีผู้เสวยสุขและทุกข์";
-                document.getElementById('label-analogy').innerText = "กิตติกรรมประกาศ";
-                document.getElementById('icon-analogy').setAttribute('data-lucide', 'heart-handshake');
-                document.getElementById('active-analogy').innerText = CREDIT_TEXT;
-                document.getElementById('bg-icon-decor').innerHTML = `<i data-lucide="wind" class="w-48 h-48 text-white"></i>`;
-                document.getElementById('pid-display').innerText = "--";
-                scenarioBox.classList.add('hidden');
-            } else {
-                document.getElementById('active-pali').innerText = activeData.pali;
-                document.getElementById('active-pali').className = `text-4xl md:text-5xl font-bold transition-all ${info.color}`;
-                document.getElementById('active-tech-label').innerText = activeData.tech;
-                
-                document.getElementById('label-dhamma').innerText = "ความหมายทางธรรม";
-                document.getElementById('active-dhamma').innerText = activeData.dhamma;
-                
-                document.getElementById('label-analogy').innerText = "เปรียบเทียบทางเทคนิค";
-                document.getElementById('icon-analogy').setAttribute('data-lucide', 'monitor');
-                document.getElementById('active-analogy').innerText = activeData.analogy;
-                
-                document.getElementById('bg-icon-decor').innerHTML = `<i data-lucide="${activeData.icon}" class="w-48 h-48 text-white"></i>`;
-                document.getElementById('pid-display').innerText = (idx + 1).toString().padStart(2, '0') + "/12";
-
-                if (currentScenario !== 'NONE' && activeData.scenarios[currentScenario]) {
-                    scenarioBox.classList.remove('hidden');
-                    document.getElementById('active-scenario').innerText = activeData.scenarios[currentScenario];
-                } else scenarioBox.classList.add('hidden');
-            }
-            lucide.createIcons();
-
-            // Nodes
-            nidanas.forEach((n, i) => {
-                const node = document.getElementById(`node-${i}`);
-                if(!node) return;
-                
-                node.style.transform = `rotate(${-rotationAngle}deg)`;
-
-                const icon = node.querySelector('.icon-el');
-                const title = node.querySelector('.title-el');
-                const cutBadge = document.getElementById(`cut-${i}`);
-
-                node.classList.remove('active', 'target-highlight');
-                node.style.color = '';
-                node.style.boxShadow = '';
-                cutBadge.classList.add('opacity-0');
-                
-                const isTarget = (i + 1) === info.targetId;
-                const modeColorHex = getHexColor(currentMode);
-
-                if (isTarget && currentMode !== 'VOID' && currentMode !== 'LOOP') {
-                    node.classList.add('target-highlight');
-                    node.style.borderColor = modeColorHex;
-                    node.style.boxShadow = `0 0 15px ${modeColorHex}40`;
-                    icon.style.color = modeColorHex;
-                    title.style.color = modeColorHex;
-                    cutBadge.classList.remove('opacity-0');
-                    cutBadge.style.backgroundColor = modeColorHex;
-                } else {
-                    icon.style.color = '';
-                    title.style.color = '';
-                    node.style.borderColor = 'rgba(255,255,255,0.1)';
-                    icon.classList.remove('text-white');
-                    icon.classList.add('text-slate-500');
-                    title.classList.remove('text-white');
-                    title.classList.add('text-slate-500');
-                }
-
-                if (i === idx && currentMode !== 'VOID') {
-                    node.classList.add('active');
-                    if(!isTarget) {
-                        node.style.borderColor = 'rgba(255,255,255,0.4)';
-                        icon.classList.remove('text-slate-500');
-                        icon.classList.add(info.color);
-                        title.classList.remove('text-slate-500');
-                        title.classList.add('text-white');
-                    }
-                }
-                node.style.opacity = currentMode === 'VOID' ? '0.1' : (i === idx || isTarget ? '1' : '0.4');
-            });
-        }
-
-        function getHexColor(mode) {
-            const map = {
-                'LOOP': '#eab308', 'INTERNAL': '#f97316', 'GATEWAY': '#06b6d4',
-                'VEDANA': '#8b5cf6', 'TANHA': '#ef4444', 'VOID': '#ffffff'
-            };
-            return map[mode] || '#ffffff';
-        }
-
-        function animate() {
-            if (currentMode === 'VOID') {
-                 document.getElementById('main-progress').style.width = '0%';
-                 requestAnimationFrame(animate);
-                 return;
-            }
-
-            const now = Date.now();
-            const elapsed = now - startTime;
-            const progress = Math.min((elapsed / CYCLE_TIME) * 100, 100);
-            const info = modeInfo[currentMode];
-
-            document.getElementById('main-progress').style.width = `${progress}%`;
-            document.getElementById('main-progress').className = `progress-bar ${info.color.replace('text-', 'bg-')}`;
-
-            if (elapsed >= CYCLE_TIME) {
-                idx = (idx + 1) % 12;
-                if (currentMode === 'INTERNAL' && idx > 1) idx = 0;
-                else if (currentMode === 'GATEWAY' && idx > 5) idx = 0;
-                else if (currentMode === 'VEDANA' && idx > 6) idx = 0;
-                else if (currentMode === 'TANHA' && idx > 7) idx = 0;
-
-                startTime = Date.now();
-                updateUI();
-            }
-            requestAnimationFrame(animate);
-        }
-
-        window.onload = init;
-        window.addEventListener('resize', renderCircularNodes);
-    </script>
-</body>
-</html>
+                        <div id="scenario-box" class="hidden bg-green-500/5 rounded-xl p-5 border border-green-500/10 t
