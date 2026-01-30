@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samsara OS - v1.0 Official</title>
+    <title>Samsara OS - v1.0 Fixed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,9 +12,11 @@
             font-family: 'Chakra Petch', sans-serif;
             background-color: #0f172a;
             min-height: 100vh;
+            /* แก้ไข: เปิดให้ Scroll ได้อิสระ */
+            overflow-y: auto; 
+            overflow-x: hidden;
             color: #cbd5e1;
             user-select: none;
-            overflow-x: hidden;
         }
 
         .zen-panel {
@@ -29,12 +31,12 @@
             position: relative;
             width: 100%;
             aspect-ratio: 1 / 1;
-            max-width: 400px; /* Mobile optimal */
+            max-width: 400px; 
             margin: 0 auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            touch-action: none; 
+            touch-action: none; /* เฉพาะวงล้อที่ห้าม Scroll เพื่อให้หมุนได้ */
         }
 
         .cycle-container {
@@ -44,7 +46,6 @@
             transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        /* The Nodes */
         .cycle-node {
             position: absolute;
             width: 68px; height: 68px;
@@ -71,7 +72,6 @@
             z-index: 20;
         }
 
-        /* Target Highlight */
         .cycle-node.target-highlight {
             border-width: 2px;
             box-shadow: 0 0 20px currentColor;
@@ -94,7 +94,6 @@
             z-index: 5;
         }
 
-        /* Nav Buttons */
         .nav-btn {
             padding: 8px 14px;
             border-radius: 99px;
@@ -106,8 +105,8 @@
         }
         .nav-btn.active { opacity: 1; background: rgba(255,255,255,0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        /* Helpers */
         .progress-bar { height: 3px; background: currentColor; width: 0%; transition: width 0.1s linear; }
+        
         .mode-info-container { transition: all 0.5s; overflow: hidden; max-height: 200px; opacity: 1; margin-bottom: 1rem; }
         .mode-info-container.collapsed { max-height: 0; opacity: 0; margin-bottom: 0; padding: 0; border: 0; }
         
@@ -116,13 +115,13 @@
             color: #94a3b8; font-size: 13px; padding: 6px 10px; border-radius: 12px; outline: none; 
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
-<body class="p-3 md:p-6 flex flex-col h-screen overflow-hidden">
+<!-- แก้ไข: ลบ h-screen และ overflow-hidden ออกจาก body -->
+<body class="p-3 md:p-6 flex flex-col gap-4">
 
     <!-- Header -->
     <header class="flex flex-col gap-4 mb-2 shrink-0">
@@ -131,7 +130,7 @@
                 <div id="mode-dot" class="w-3 h-3 rounded-full bg-yellow-500 shadow-[0_0_12px_currentColor] transition-colors duration-500"></div>
                 <h1 class="text-2xl font-bold text-white uppercase leading-none flex items-center gap-2">
                     Samsara OS <span class="text-slate-400 font-normal text-lg">สังสารวัฏ</span>
-                    <span class="text-[10px] text-slate-500 border border-slate-700 px-2 py-0.5 rounded ml-1">v1.0</span>
+                    <span class="text-[10px] text-slate-500 border border-slate-700 px-2 py-0.5 rounded ml-1">v1.0 Fixed</span>
                 </h1>
             </div>
             
@@ -154,10 +153,12 @@
     </header>
 
     <!-- Main Layout -->
-    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start min-h-0 overflow-hidden">
+    <!-- แก้ไข: ลบ overflow-hidden และใช้ min-h แทน h-full -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         <!-- Left: Wheel Section -->
-        <section class="lg:col-span-7 flex flex-col items-center justify-center h-full relative">
+        <!-- เพิ่ม min-h เพื่อกันเนื้อหายุบ -->
+        <section class="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[400px]">
             <div class="cycle-outer" id="cycle-outer">
                 <svg class="connection-lines" id="svg-lines"></svg>
                 <div class="cycle-container" id="cycle-container">
@@ -169,11 +170,11 @@
                     </div>
                 </div>
             </div>
-            <p class="text-[10px] text-slate-500 mt-4 font-mono uppercase tracking-widest opacity-40 absolute bottom-4">Swipe to Rotate</p>
+            <p class="text-[10px] text-slate-500 mt-4 font-mono uppercase tracking-widest opacity-40 absolute bottom-0 lg:bottom-10">Swipe to Rotate</p>
         </section>
 
         <!-- Right: Detail Section -->
-        <section class="lg:col-span-5 flex flex-col gap-4 h-full min-h-0 relative">
+        <section class="lg:col-span-5 flex flex-col gap-4 relative">
             
             <!-- Toggle Info Btn -->
             <div class="flex justify-end h-0 relative">
@@ -193,7 +194,8 @@
             </div>
 
             <!-- Main Detail Panel -->
-            <div class="zen-panel p-6 md:p-8 flex flex-col relative overflow-hidden group flex-1 min-h-0">
+            <!-- ปรับให้สูงตามเนื้อหา ไม่ถูกตัด (h-auto / min-h) -->
+            <div class="zen-panel p-6 md:p-8 flex flex-col relative overflow-hidden group min-h-[500px]">
                 <div id="bg-icon-decor" class="absolute -right-6 -bottom-6 opacity-[0.05] transform group-hover:scale-110 transition-all duration-700"></div>
                 
                 <div class="z-10 flex flex-col h-full">
@@ -209,8 +211,9 @@
 
                     <div class="h-px w-full bg-white/10 mb-5 shrink-0"></div>
 
-                    <!-- Scrollable Content -->
-                    <div class="flex-1 space-y-6 overflow-y-auto pr-2 custom-scroll">
+                    <!-- Scrollable Content (ภายใน Panel) -->
+                    <!-- ปรับ max-h ให้เหมาะสมบนมือถือ -->
+                    <div class="flex-1 space-y-6 overflow-y-auto pr-2 custom-scroll max-h-[60vh] lg:max-h-[500px]">
                         
                         <!-- Scenario -->
                         <div id="scenario-box" class="hidden bg-green-500/5 rounded-xl p-5 border border-green-500/10 transition-all">
@@ -335,7 +338,7 @@
                 lines += `<line x1="${x}" y1="${y}" x2="${nextX}" y2="${nextY}" stroke="rgba(255,255,255,0.05)" stroke-width="1" />`;
             });
             
-            // Background lines handled by simple SVG or css if needed, here simplified.
+            svgLines.innerHTML = lines;
             lucide.createIcons();
         }
 
@@ -424,13 +427,13 @@
             const info = modeInfo[currentMode];
             const scenarioBox = document.getElementById('scenario-box');
             
-            // Rotate Wheel logic
+            // Rotate Wheel
             if (!isDragging) {
                 rotationAngle = -(idx * 30);
                 document.getElementById('cycle-container').style.transform = `rotate(${rotationAngle}deg)`;
             }
 
-            // Right Panel Logic
+            // Right Panel
             if (currentMode === 'VOID') {
                 document.getElementById('active-pali').innerText = "สุญญตา";
                 document.getElementById('active-tech-label').innerText = "SYSTEM VOID";
@@ -463,12 +466,11 @@
             }
             lucide.createIcons();
 
-            // Wheel Nodes Logic
+            // Nodes
             nidanas.forEach((n, i) => {
                 const node = document.getElementById(`node-${i}`);
                 if(!node) return;
                 
-                // Keep text upright
                 node.style.transform = `rotate(${-rotationAngle}deg)`;
 
                 const icon = node.querySelector('.icon-el');
@@ -480,22 +482,19 @@
                 node.style.boxShadow = '';
                 cutBadge.classList.add('opacity-0');
                 
-                // Color Logic for Target (Cut Point)
                 const isTarget = (i + 1) === info.targetId;
                 const modeColorHex = getHexColor(currentMode);
 
                 if (isTarget && currentMode !== 'VOID' && currentMode !== 'LOOP') {
                     node.classList.add('target-highlight');
                     node.style.borderColor = modeColorHex;
-                    node.style.boxShadow = `0 0 15px ${modeColorHex}40`; // 40 is hex opacity
-                    
+                    node.style.boxShadow = `0 0 15px ${modeColorHex}40`;
                     icon.style.color = modeColorHex;
                     title.style.color = modeColorHex;
-                    
                     cutBadge.classList.remove('opacity-0');
                     cutBadge.style.backgroundColor = modeColorHex;
                 } else {
-                    icon.style.color = ''; // reset to default css
+                    icon.style.color = '';
                     title.style.color = '';
                     node.style.borderColor = 'rgba(255,255,255,0.1)';
                     icon.classList.remove('text-white');
@@ -504,18 +503,16 @@
                     title.classList.add('text-slate-500');
                 }
 
-                // Color Logic for Active Node
                 if (i === idx && currentMode !== 'VOID') {
                     node.classList.add('active');
                     if(!isTarget) {
                         node.style.borderColor = 'rgba(255,255,255,0.4)';
                         icon.classList.remove('text-slate-500');
-                        icon.classList.add(info.color); // Tailwind class
+                        icon.classList.add(info.color);
                         title.classList.remove('text-slate-500');
                         title.classList.add('text-white');
                     }
                 }
-                
                 node.style.opacity = currentMode === 'VOID' ? '0.1' : (i === idx || isTarget ? '1' : '0.4');
             });
         }
