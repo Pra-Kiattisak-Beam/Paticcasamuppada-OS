@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paticcasamuppada OS - V1</title>
+    <title>Paticcasamuppada OS - V2 AI-Centric</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -42,10 +42,6 @@
             position: relative;
             width: 100%;
             height: 100%;
-            transition: transform 0.1s linear;
-        }
-        
-        .cycle-container.snapping {
             transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
@@ -64,7 +60,7 @@
 
         @media (min-width: 768px) {
             .cycle-node { width: 90px; height: 90px; }
-            .cycle-outer { max-width: 500px; }
+            .cycle-outer { max-width: 460px; }
         }
 
         .cycle-node.active {
@@ -97,10 +93,10 @@
             z-index: 5;
         }
 
-        .nav-btn {
-            padding: 6px 12px;
+        .nav-btn-mode {
+            padding: 8px 14px;
             border-radius: 99px;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 600;
             transition: all 0.3s ease;
             opacity: 0.6;
@@ -108,15 +104,13 @@
             border: 1px solid transparent;
             white-space: nowrap;
         }
-        .nav-btn:hover { opacity: 0.9; background: rgba(255,255,255,0.05); }
-        .nav-btn.active {
+        .nav-btn-mode:hover { opacity: 0.9; background: rgba(255,255,255,0.05); }
+        .nav-btn-mode.active {
             opacity: 1;
             background: rgba(30, 41, 59, 0.9);
             border-color: rgba(255,255,255,0.2);
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-
-        .progress-bar { height: 2px; background: currentColor; width: 0%; transition: width 0.1s linear; }
         
         .mode-info-container {
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -126,7 +120,7 @@
 
         .scenario-select {
             background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1);
-            color: #94a3b8; font-size: 11px; padding: 4px 8px; border-radius: 8px; outline: none; cursor: pointer;
+            color: #94a3b8; font-size: 13px; padding: 6px 12px; border-radius: 8px; outline: none; cursor: pointer;
         }
         .scenario-select:focus { border-color: #eab308; color: white; }
 
@@ -139,7 +133,7 @@
         .modal-overlay.open { display: flex; opacity: 1; }
         .modal-content {
             background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px; width: 90%; max-width: 400px; padding: 20px;
+            border-radius: 16px; width: 90%; max-width: 500px; padding: 24px;
             transform: scale(0.9); transition: transform 0.3s ease;
         }
         .modal-overlay.open .modal-content { transform: scale(1); }
@@ -149,46 +143,57 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
     </style>
 </head>
-<body class="flex flex-col p-3 md:p-4 gap-3">
+<body class="flex flex-col p-3 md:p-5 gap-4">
 
-    <header class="flex flex-col xl:flex-row justify-between items-center gap-3 shrink-0">
-        <div class="flex items-center gap-2 w-full xl:w-auto justify-between xl:justify-start">
-            <div class="flex items-center gap-2">
-                <div id="mode-dot" class="w-2.5 h-2.5 rounded-full bg-yellow-500 shadow-[0_0_10px_currentColor] transition-colors duration-500"></div>
-                <h1 class="text-lg font-bold text-white tracking-wide leading-none uppercase">
-                    Paticcasamuppada OS <span class="text-slate-300 font-normal ml-1 text-sm">ปฏิจจสมุปบาท</span>
-                    <span class="text-[9px] text-slate-500 border border-slate-700 px-1.5 py-0.5 rounded ml-2">V1</span>
+    <!-- Header -->
+    <header class="flex flex-col xl:flex-row justify-between items-center gap-4 shrink-0">
+        <div class="flex items-center gap-3 w-full xl:w-auto justify-between xl:justify-start">
+            <div class="flex items-center gap-3">
+                <div id="mode-dot" class="w-3 h-3 rounded-full bg-yellow-500 shadow-[0_0_12px_currentColor] transition-colors duration-500"></div>
+                <h1 class="text-xl md:text-2xl font-bold text-white tracking-wide leading-none uppercase">
+                    Paticcasamuppada <span class="text-slate-400 font-normal ml-1">OS</span>
                 </h1>
             </div>
             
-            <div class="flex items-center gap-2 xl:ml-4">
-                <select id="scenario-select" onchange="changeScenario(this.value)" class="scenario-select">
-                    <option value="NONE">-- สถานการณ์ทั่วไป --</option>
-                    <option value="FOOD">🍗 เรื่องกิน</option>
-                    <option value="SOCIAL">📱 โซเชียล</option>
-                    <option value="SHOPPING">🛍️ ช้อปปิ้ง</option>
-                    <option value="CUSTOM" hidden>✨ เรื่องของคุณ...</option>
-                </select>
-                <button onclick="openAIModal()" class="nav-btn bg-emerald-900/30 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20 active:bg-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
-                    <i data-lucide="sparkles" class="w-3 h-3"></i> AI Analyze
+            <div class="flex items-center gap-2">
+                <button onclick="openSettings()" class="p-2 text-slate-400 hover:text-white transition-colors" title="ตั้งค่า API Key">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
         
-        <div class="flex gap-1 bg-slate-900/60 p-1 rounded-full border border-white/10 overflow-x-auto max-w-full shadow-lg w-full xl:w-auto pb-2 md:pb-1">
-            <button onclick="setMode('LOOP')" id="btn-LOOP" class="nav-btn text-yellow-400">วัฏฏะ</button>
-            <button onclick="setMode('INTERNAL')" id="btn-INTERNAL" class="nav-btn text-orange-400">หยุดปรุงแต่ง</button>
-            <button onclick="setMode('GATEWAY')" id="btn-GATEWAY" class="nav-btn text-cyan-400">สักแต่ว่ารู้</button>
-            <button onclick="setMode('VEDANA')" id="btn-VEDANA" class="nav-btn text-purple-400">รู้ทันเวทนา</button>
-            <button onclick="setMode('TANHA')" id="btn-TANHA" class="nav-btn text-red-400">ดับตัณหา</button>
-            <button onclick="setMode('VOID')" id="btn-VOID" class="nav-btn text-white">สลัดคืน</button>
+        <!-- Mode Buttons -->
+        <div class="flex gap-2 bg-slate-900/60 p-1.5 rounded-full border border-white/10 overflow-x-auto max-w-full shadow-lg w-full xl:w-auto">
+            <button onclick="setMode('LOOP')" id="btn-LOOP" class="nav-btn-mode text-yellow-400">วัฏฏะ</button>
+            <button onclick="setMode('INTERNAL')" id="btn-INTERNAL" class="nav-btn-mode text-orange-400">หยุดปรุงแต่ง</button>
+            <button onclick="setMode('GATEWAY')" id="btn-GATEWAY" class="nav-btn-mode text-cyan-400">สักแต่ว่ารู้</button>
+            <button onclick="setMode('VEDANA')" id="btn-VEDANA" class="nav-btn-mode text-purple-400">รู้ทันเวทนา</button>
+            <button onclick="setMode('TANHA')" id="btn-TANHA" class="nav-btn-mode text-red-400">ดับตัณหา</button>
+            <button onclick="setMode('VOID')" id="btn-VOID" class="nav-btn-mode text-white">สลัดคืน</button>
         </div>
     </header>
 
-    <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4">
+    <!-- Highlight AI Button Bar -->
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-800/40 p-3 rounded-2xl border border-emerald-500/20">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <select id="scenario-select" onchange="changeScenario(this.value)" class="scenario-select w-full sm:w-auto text-sm">
+                <option value="NONE">-- เลือกพิจารณาสถานการณ์ --</option>
+                <option value="FOOD">🍗 เรื่องกิน (หิว/อยาก)</option>
+                <option value="SOCIAL">📱 โซเชียล (ดราม่า/โกรธ)</option>
+                <option value="SHOPPING">🛍️ ช้อปปิ้ง (อยากได้ของ)</option>
+                <option value="CUSTOM" hidden class="text-emerald-400 font-bold">✨ ปัญหาของคุณ (AI วิเคราะห์)</option>
+            </select>
+        </div>
+        <button onclick="openAIModal()" class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-500 text-white hover:from-emerald-500 hover:to-teal-400 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02]">
+            <i data-lucide="sparkles" class="w-4 h-4"></i> ให้ AI ช่วยวิเคราะห์ปัญหาของคุณ
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 mt-2">
         
         <!-- Left: Wheel -->
-        <div class="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[400px]">
+        <div class="lg:col-span-7 flex flex-col items-center justify-center relative min-h-[450px]">
             <div class="cycle-outer" id="cycle-outer">
                 <svg class="connection-lines" id="svg-lines"></svg>
                 <div class="cycle-container" id="cycle-container">
@@ -196,96 +201,114 @@
                 </div>
                 <div class="center-hub">
                     <div id="hub-icon" class="text-slate-500 transition-colors duration-500">
-                        <i data-lucide="loader" class="w-8 h-8 animate-spin-slow"></i>
+                        <i data-lucide="compass" class="w-8 h-8"></i>
                     </div>
                 </div>
             </div>
-            <p class="text-[10px] text-slate-500 mt-4 font-mono uppercase tracking-widest opacity-40">หมุนวงล้อเพื่อเล่น (Drag / Swipe)</p>
+            <p class="text-xs text-slate-500 mt-6 font-mono tracking-widest opacity-60 bg-slate-900/50 px-4 py-1 rounded-full border border-white/5">คลิกที่วงล้อ หรือกดปุ่มถัดไปเพื่อพิจารณาธรรม</p>
         </div>
 
         <!-- Right: Panel -->
         <div class="lg:col-span-5 flex flex-col gap-0 relative">
             
-            <div id="mode-info-box" class="mode-info-container zen-panel border-l-4 p-3 shrink-0">
-                <div class="flex justify-between items-start mb-1">
-                    <span class="text-[9px] font-mono uppercase tracking-widest text-slate-400">วัตถุประสงค์ (Objective)</span>
-                    <span id="toast-timer" class="text-[9px] text-slate-500 animate-pulse">Auto-hide</span>
+            <div id="mode-info-box" class="mode-info-container zen-panel border-l-4 p-4 shrink-0">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400">เป้าหมายของการเจริญสติ</span>
+                    <span id="toast-timer" class="text-[10px] text-slate-500 animate-pulse">Auto-hide</span>
                 </div>
-                <h3 id="mode-title" class="text-sm font-bold text-white mb-1">...</h3>
-                <p id="mode-desc" class="text-[11px] text-slate-300 leading-relaxed font-light">...</p>
+                <h3 id="mode-title" class="text-base font-bold text-white mb-1">...</h3>
+                <p id="mode-desc" class="text-sm text-slate-300 leading-relaxed font-light">...</p>
             </div>
 
-            <div class="zen-panel p-5 md:p-6 flex flex-col relative overflow-hidden group min-h-[500px]">
-                <div id="bg-icon-decor" class="absolute -right-6 -bottom-6 opacity-[0.05] transition-all duration-700 transform group-hover:scale-110 group-hover:rotate-12"></div>
+            <div class="zen-panel p-6 md:p-8 flex flex-col relative overflow-hidden group min-h-[500px]">
+                <div id="bg-icon-decor" class="absolute -right-10 -bottom-10 opacity-[0.03] transition-all duration-700 transform group-hover:scale-110 group-hover:rotate-12"></div>
 
                 <div class="z-10 flex flex-col h-full">
-                    <div class="mb-4 shrink-0">
+                    
+                    <!-- Title Header -->
+                    <div class="mb-5 shrink-0">
                          <div class="flex justify-between items-start">
-                             <div class="text-[10px] font-mono text-blue-400 mb-1 uppercase tracking-wider" id="active-tech-label">ROOT ERROR</div>
-                             <div id="pid-display" class="text-xs font-mono text-slate-600 font-bold">01/12</div>
+                             <div class="text-xs font-mono text-slate-500 mb-1 uppercase tracking-wider" id="active-tech-label">STEP</div>
+                             <div id="pid-display" class="text-sm font-mono text-slate-500 font-bold bg-slate-800 px-2 py-1 rounded-md">01/12</div>
                          </div>
-                         <h2 id="active-pali" class="text-3xl md:text-4xl font-bold text-white transition-all duration-300 leading-tight">...</h2>
+                         <h2 id="active-pali" class="text-4xl md:text-5xl font-bold text-white transition-all duration-300 leading-tight mt-2">...</h2>
                     </div>
 
-                    <div class="h-px w-full bg-white/10 mb-4 shrink-0"></div>
+                    <div class="h-px w-full bg-white/10 mb-6 shrink-0"></div>
 
-                    <div class="flex-1 space-y-4 overflow-y-auto custom-scroll pr-2">
-                        <div id="scenario-box" class="hidden bg-green-900/20 rounded-xl p-4 border border-green-500/20 hover:bg-green-900/30 transition-colors animate-pulse-once">
-                            <div class="text-[11px] font-bold text-green-400 uppercase mb-2 flex items-center gap-2">
-                                <i data-lucide="play-circle" class="w-4 h-4 text-emerald-400"></i>
-                                <span id="label-scenario">สถานการณ์ตัวอย่าง</span>
-                            </div>
-                            <p id="active-scenario" class="text-sm text-green-100 font-normal leading-relaxed">...</p>
-                        </div>
-
-                        <div class="bg-black/20 rounded-xl p-4 border border-white/5 hover:bg-black/30 transition-colors">
-                            <div class="text-[11px] font-bold text-slate-300 uppercase mb-2 flex items-center gap-2">
+                    <!-- Scrollable Content Area -->
+                    <div class="flex-1 space-y-5 overflow-y-auto custom-scroll pr-3">
+                        
+                        <!-- Dhamma Block -->
+                        <div class="bg-slate-800/40 rounded-2xl p-5 border border-white/5 hover:bg-slate-800/60 transition-colors">
+                            <div class="text-xs font-bold text-slate-400 uppercase mb-3 flex items-center gap-2">
                                 <i data-lucide="book-open" class="w-4 h-4 text-yellow-500"></i>
                                 <span id="label-dhamma">ความหมายทางธรรม</span>
                             </div>
-                            <p id="active-dhamma" class="text-sm text-slate-200 font-light leading-relaxed">...</p>
+                            <p id="active-dhamma" class="text-base md:text-lg text-slate-200 font-light leading-relaxed">...</p>
                         </div>
 
-                        <div class="bg-blue-500/5 rounded-xl p-4 border border-blue-500/10 hover:bg-blue-500/10 transition-colors">
-                            <div class="text-[11px] font-bold text-blue-300 uppercase mb-2 flex items-center gap-2">
-                                <i data-lucide="monitor" class="w-4 h-4" id="icon-analogy"></i>
-                                <span id="label-analogy">เปรียบเทียบทางเทคนิค</span>
+                        <!-- Scenario Block (AI / Preset) -->
+                        <div id="scenario-box" class="hidden bg-emerald-900/10 rounded-2xl p-5 border border-emerald-500/20 hover:bg-emerald-900/20 transition-colors">
+                            <div class="text-xs font-bold text-emerald-400 uppercase mb-3 flex items-center gap-2">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                <span id="label-scenario">พิจารณาสถานการณ์จริง</span>
                             </div>
-                            <div id="active-analogy" class="text-xs md:text-sm text-blue-100/90 font-light leading-relaxed whitespace-pre-line">...</div>
+                            <p id="active-scenario" class="text-base md:text-lg text-emerald-50 font-normal leading-relaxed">...</p>
                         </div>
                     </div>
 
-                    <div class="mt-4 pt-3 border-t border-white/5 relative shrink-0">
-                        <div class="absolute bottom-0 left-0 w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                            <div id="main-progress" class="progress-bar bg-white"></div>
-                        </div>
+                    <!-- Manual Navigation Controls -->
+                    <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center shrink-0">
+                        <button onclick="prevNode()" id="btn-prev" class="px-4 py-3 bg-slate-800/80 hover:bg-slate-700 text-slate-300 rounded-xl flex items-center gap-2 transition-colors shadow-md">
+                            <i data-lucide="arrow-left" class="w-5 h-5"></i> ย้อนกลับ
+                        </button>
+                        <div class="text-[10px] text-slate-500 font-mono tracking-widest hidden sm:block">พิจารณาธรรม</div>
+                        <button onclick="nextNode()" id="btn-next" class="px-4 py-3 bg-slate-800/80 hover:bg-slate-700 text-slate-300 rounded-xl flex items-center gap-2 transition-colors shadow-md">
+                            ถัดไป <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
                     </div>
                 </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- AI Input Modal -->
+    <div id="ai-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="sparkles" class="w-6 h-6 text-emerald-400"></i> ธรรมาภิวัตน์ AI</h3>
+                <button onclick="closeAIModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <p class="text-base text-slate-300 mb-4 leading-relaxed">พิมพ์เรื่องราวความทุกข์ หรือปัญหาที่หลวงพี่/คุณ กำลังเผชิญอยู่ AI จะช่วยแจกแจงตามหลัก <b>"ปฏิจจสมุปบาท"</b> เพื่อให้เห็นต้นเหตุและวิธีดับทุกข์ครับ</p>
+            
+            <textarea id="ai-input" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-base text-white focus:border-emerald-500 outline-none resize-none mb-5 shadow-inner placeholder-slate-600" placeholder="ตัวอย่าง: ผมรู้สึกโกรธมากที่เพื่อนร่วมงานพูดจาไม่ดีใส่, รู้สึกเป็นทุกข์ที่ช่วยคนอื่นแล้วเขาไม่เห็นค่า..."></textarea>
+            
+            <div class="flex justify-end gap-3">
+                <button onclick="closeAIModal()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-colors">ยกเลิก</button>
+                <button onclick="submitAI()" id="ai-submit-btn" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-500 flex items-center gap-2 shadow-lg transition-colors">
+                    <i data-lucide="brain-circuit" class="w-5 h-5"></i> เริ่มวิเคราะห์
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="ai-modal" class="modal-overlay">
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5 text-emerald-400"></i> วิเคราะห์ด้วย AI</h3>
-                <button onclick="closeAIModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5"></i> ตั้งค่าระบบ</h3>
+                <button onclick="closeSettings()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            
-            <div id="api-key-section" class="mb-4 hidden">
-                <p class="text-xs text-red-400 mb-2">* กรุณาใส่ Google Gemini API Key เพื่อใช้งาน (บันทึกในเครื่อง)</p>
-                <input type="password" id="user-api-key" class="w-full bg-slate-900 border border-red-500/50 rounded-lg p-2 text-sm text-white mb-2" placeholder="Paste API Key Here">
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-[10px] text-blue-400 underline">ขอ API Key ฟรีที่นี่</a>
+            <div class="mb-5">
+                <label class="text-sm font-bold text-slate-300 mb-2 block">Google Gemini API Key</label>
+                <input type="password" id="settings-api-key" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-base text-white" placeholder="วาง API Key ที่นี่">
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed">กุญแจนี้ใช้สำหรับเชื่อมต่อกับ AI จะถูกบันทึกไว้ในเบราว์เซอร์ของท่านเท่านั้น <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-emerald-400 hover:underline">ขอรับ API Key ฟรีได้ที่นี่</a></p>
             </div>
-
-            <p class="text-sm text-slate-400 mb-3">พิมพ์เรื่องราวหรือปัญหาที่กำลังเผชิญอยู่ AI จะช่วยแจกแจงตามหลักปฏิจจสมุปบาทให้ครับ</p>
-            <textarea id="ai-input" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm text-white focus:border-emerald-500 outline-none resize-none mb-4 placeholder-slate-600" placeholder="ตัวอย่าง: ผมโกรธเพื่อนร่วมงานที่พูดจาไม่ดีใส่..."></textarea>
-            
-            <div class="flex justify-end gap-2">
-                <button onclick="closeAIModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800">ยกเลิก</button>
-                <button onclick="submitAI()" id="ai-submit-btn" class="px-4 py-2 rounded-lg text-sm bg-emerald-600 text-white hover:bg-emerald-500 font-bold flex items-center gap-2">
-                    <i data-lucide="brain-circuit" class="w-4 h-4"></i> วิเคราะห์
-                </button>
+            <div class="flex justify-end">
+                <button onclick="saveSettings()" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-colors">บันทึกการตั้งค่า</button>
             </div>
         </div>
     </div>
@@ -295,181 +318,159 @@
 
         const nidanas = [
             { 
-                id: 1, pali: "อวิชชา", tech: "Root Bug", icon: "shield-alert", 
-                dhamma: "ความไม่รู้แจ้งตามความเป็นจริง ไม่รู้ว่าทุกสิ่งไม่เที่ยง", 
-                analogy: "เหมือน OS เถื่อนที่มี Bug ฝังลึก ทำให้ระบบรวน",
+                id: 1, pali: "อวิชชา", icon: "shield-alert", 
+                dhamma: "ความไม่รู้แจ้งตามความเป็นจริง ไม่เห็นว่าทุกสิ่งล้วนเป็นอนิจจัง (ไม่เที่ยง) ทุกขัง และอนัตตา ทำให้หลงยึดติด", 
                 scenarios: {
-                    FOOD: "หลงคิดว่าการกินของอร่อยคือความสุขที่แท้จริงและยั่งยืน (ไม่รู้โทษ)",
-                    SOCIAL: "หลงยึดว่าคำด่าในจอคือเรื่องจริงที่ทำร้ายตัวเราได้ (ไม่รู้สมมติ)",
-                    SHOPPING: "หลงเชื่อโฆษณาว่าถ้าได้ของชิ้นนี้แล้วชีวิตจะสมบูรณ์แบบ (หลง Marketing)",
+                    FOOD: "หลงคิดว่าการกินของอร่อยคือความสุขที่แท้จริงและยั่งยืน ลืมไปว่าเดี๋ยวก็หิวใหม่",
+                    SOCIAL: "หลงยึดว่าตัวอักษรหรือคำด่าในจอคือเรื่องจริงที่ทำร้ายตัวเราได้",
+                    SHOPPING: "หลงเชื่อว่าถ้าได้ครอบครองของชิ้นนี้แล้วชีวิตจะสมบูรณ์แบบ มีความสุขตลอดไป",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 2, pali: "สังขาร", tech: "Programming", icon: "activity", 
-                dhamma: "การปรุงแต่งความคิด/เจตนา (กรรม)", 
-                analogy: "เหมือน Programmer เขียน Code สั่งงานผิดๆ ลงไป",
+                id: 2, pali: "สังขาร", icon: "activity", 
+                dhamma: "การปรุงแต่งทางใจ ความคิดที่ถูกอวิชชาหลอกให้สร้างเรื่องราวต่อ (เป็นตัวจุดชนวนกรรม)", 
                 scenarios: {
-                    FOOD: "ใจเริ่มคิดปรุงแต่งว่า 'เย็นนี้ต้องกินไก่ทอดร้านนั้นให้ได้'",
-                    SOCIAL: "ใจเริ่มคิดคำด่ากลับ เริ่มผูกใจเจ็บ ปรุงแต่งความโกรธ",
-                    SHOPPING: "ใจเริ่มวางแผนการเงิน คำนวณความคุ้มค่าเข้าข้างตัวเอง",
+                    FOOD: "ใจเริ่มคิดปรุงแต่งว่า 'เย็นนี้ต้องกินไก่ทอดร้านนั้นให้ได้ ถ้าไม่ได้กินต้องแย่แน่ๆ'",
+                    SOCIAL: "ใจเริ่มคิดคำด่ากลับ เริ่มขุดคุ้ยเรื่องเก่าๆ มาปรุงแต่งความโกรธให้ใหญ่ขึ้น",
+                    SHOPPING: "ใจเริ่มวางแผนการเงิน คำนวณความคุ้มค่าเข้าข้างตัวเอง หาเหตุผลให้ต้องซื้อ",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 3, pali: "วิญญาณ", tech: "System Boot", icon: "cpu", 
-                dhamma: "การรับรู้อารมณ์ (ธาตุรู้)", 
-                analogy: "เหมือนกดปุ่มเปิดเครื่อง ระบบตื่นตัวพร้อมรับ Input",
+                id: 3, pali: "วิญญาณ", icon: "cpu", 
+                dhamma: "จิตที่ตื่นตัวขึ้นมารับรู้อารมณ์ (ธาตุรู้) เตรียมพร้อมที่จะออกไปรับข้อมูลจากโลกภายนอก", 
                 scenarios: {
-                    FOOD: "จิตตื่นตัวรับรู้ความหิวและความอยาก เตรียมพุ่งไปหาร้าน",
-                    SOCIAL: "จิตจดจ่ออยู่กับหน้าจอมือถือ เตรียมพร้อมปะทะ",
-                    SHOPPING: "จิตพุ่งไปเกาะอยู่ที่สินค้าชิ้นนั้น รับรู้แต่เรื่องของมัน",
+                    FOOD: "จิตตื่นตัวรับรู้ความหิวและความอยาก พุ่งความสนใจไปที่เรื่องอาหารอย่างเดียว",
+                    SOCIAL: "จิตจดจ่ออยู่กับหน้าจอมือถือ เตรียมพร้อมปะทะและรับรู้เรื่องดราม่า",
+                    SHOPPING: "จิตพุ่งไปเกาะอยู่ที่สินค้าชิ้นนั้น รับรู้แต่ข้อดีของมัน",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 4, pali: "นามรูป", tech: "Hardware/Software", icon: "layers", 
-                dhamma: "กายและใจทำงานร่วมกัน", 
-                analogy: "เหมือน Hardware และ Software ทำงานประสานกัน",
+                id: 4, pali: "นามรูป", icon: "layers", 
+                dhamma: "กาย (รูป) และ จิตใจ (นาม) เริ่มทำงานประสานกันเพื่อตอบสนองต่อความอยากนั้น", 
                 scenarios: {
-                    FOOD: "ท้องร้อง (รูป) และใจที่หิวโหย (นาม) ทำงานสอดคล้องกัน",
-                    SOCIAL: "มือถือโทรศัพท์ (รูป) และใจที่ร้อนรุ่ม (นาม) พร้อมทำงาน",
-                    SHOPPING: "ตาจ้องสินค้า (รูป) และใจที่ตื่นเต้น (นาม) ประสานงานกัน",
+                    FOOD: "ร่างกายเริ่มมีปฏิกิริยา ท้องร้อง น้ำลายสอ (รูป) สอดคล้องกับใจที่หิวโหย (นาม)",
+                    SOCIAL: "มือจับโทรศัพท์แน่น หัวใจเต้นแรง (รูป) ใจที่ร้อนรุ่ม (นาม) พร้อมทำงาน",
+                    SHOPPING: "ตาจ้องสินค้าไม่กะพริบ (รูป) ใจที่ตื่นเต้น (นาม) ประสานงานกันอย่างเต็มที่",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 5, pali: "สฬายตนะ", tech: "I/O Ports", icon: "eye", 
-                dhamma: "ช่องทางรับสัมผัส (ตา หู จมูก...)", 
-                analogy: "เหมือน Port เชื่อมต่อที่เปิดรอรับสัญญาณ",
+                id: 5, pali: "สฬายตนะ", icon: "eye", 
+                dhamma: "ช่องทางรับสัมผัสทั้ง 6 (ตา หู จมูก ลิ้น กาย ใจ) เปิดกว้างรอรับการกระทบ", 
                 scenarios: {
-                    FOOD: "จมูกเปิดรับกลิ่น ลิ้นเตรียมรับรส ตาดูเมนู",
-                    SOCIAL: "ตาจ้องตัวหนังสือ หูรอฟังเสียงแจ้งเตือน",
-                    SHOPPING: "ตาดูรูปสินค้า หูฟังรีวิวป้ายยา",
+                    FOOD: "ตาเปิดดูแอปสั่งอาหาร จมูกเตรียมดมกลิ่น ลิ้นเตรียมรับรส",
+                    SOCIAL: "ตาจ้องอ่านทุกตัวอักษร หูรอฟังเสียงแจ้งเตือนเต๊งๆ",
+                    SHOPPING: "ตาไถดูรูปสินค้า หูคอยฟังรีวิวป้ายยาจากบล็อกเกอร์",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 6, pali: "ผัสสะ", tech: "Input Trigger", icon: "zap", 
-                dhamma: "การกระทบกันของ อายตนะ+วัตถุ", 
-                analogy: "เหมือน Data Packet วิ่งเข้ามาชน Port",
+                id: 6, pali: "ผัสสะ", icon: "zap", 
+                dhamma: "การกระทบกันอย่างสมบูรณ์ของ อายตนะ + สิ่งเร้า + การรับรู้ (จุดเกิดเหตุการณ์จริง)", 
                 scenarios: {
-                    FOOD: "กลิ่นไก่ทอดลอยมาเตะจมูก หรือเห็นรูปอาหารน่ากิน",
-                    SOCIAL: "ตาเห็นข้อความคอมเมนต์แย่ๆ เด้งขึ้นมา",
-                    SHOPPING: "ตาเห็นป้าย 'Sale 50%' หรือเห็นสินค้าวางโชว์อยู่",
+                    FOOD: "ตากระทบเห็นรูปอาหารน่ากินโผล่มา หรือจมูกได้กลิ่นหอมลอยมาเตะ",
+                    SOCIAL: "ตากระทบเห็นข้อความคอมเมนต์แย่ๆ เด้งขึ้นมาตรงหน้า",
+                    SHOPPING: "ตากระทบเห็นป้าย 'Sale 50% วันสุดท้าย' หรือเห็นของจริงวางโชว์อยู่",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 7, pali: "เวทนา", tech: "Sentiment Score", icon: "heart", 
-                dhamma: "ความรู้สึก สุข/ทุกข์/เฉยๆ", 
-                analogy: "เหมือนระบบให้ Rating ข้อมูล (Like/Dislike)",
+                id: 7, pali: "เวทนา", icon: "heart", 
+                dhamma: "ความรู้สึกที่เกิดขึ้นทันทีหลังการกระทบ คือ สุข (ชอบ), ทุกข์ (ไม่ชอบ), หรือเฉยๆ", 
                 scenarios: {
-                    FOOD: "รู้สึก 'ชอบ' กลิ่นนี้มาก น้ำลายสอ (สุขเวทนา)",
-                    SOCIAL: "รู้สึก 'ไม่พอใจ' อย่างแรง เจ็บใจ (ทุกข์เวทนา)",
-                    SHOPPING: "รู้สึก 'ถูกใจ' ตื่นเต้น อยากได้ (สุขเวทนา)",
+                    FOOD: "รู้สึก 'ชอบ' ภาพอาหารนี้มาก รู้สึกสุขเวทนาชั่วขณะ",
+                    SOCIAL: "รู้สึก 'ไม่พอใจ' อย่างแรง เจ็บปวดใจ เกิดทุกข์เวทนา",
+                    SHOPPING: "รู้สึก 'ถูกใจ' ตื่นเต้น เกิดสุขเวทนาที่ได้เห็นของที่อยากได้",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 8, pali: "ตัณหา", tech: "Recursive Loop", icon: "refresh-cw", 
-                dhamma: "ความทะยานอยาก (กาม/ภว/วิภว)", 
-                analogy: "เหมือน Loop โปรแกรมที่สั่งรันซ้ำๆ ไม่หยุด",
+                id: 8, pali: "ตัณหา", icon: "refresh-cw", 
+                dhamma: "ความทะยานอยากที่รุนแรงขึ้น อยากได้มา (กาม) อยากเป็น (ภว) อยากทำลาย (วิภว)", 
                 scenarios: {
-                    FOOD: "เกิดความอยากกินรุนแรง ต้องกินให้ได้เดี๋ยวนี้!",
-                    SOCIAL: "เกิดความอยากด่ากลับ อยากเอาชนะ อยากให้มันเจ็บ",
-                    SHOPPING: "เกิดความอยากครอบครอง ของมันต้องมี พลาดไม่ได้",
+                    FOOD: "เกิดความอยากกินรุนแรง ทนไม่ไหว ต้องเอาเข้าปากเดี๋ยวนี้!",
+                    SOCIAL: "เกิดความอยากด่ากลับ อยากเอาชนะ อยากทำลายฝั่งตรงข้ามให้พังทลาย",
+                    SHOPPING: "เกิดความอยากครอบครอง ของมันต้องมี พลาดไม่ได้เด็ดขาด!",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 9, pali: "อุปาทาน", tech: "File Ownership", icon: "lock", 
-                dhamma: "ความยึดมั่นว่าเป็น 'ตัวกู ของกู'", 
-                analogy: "เหมือน Lock File ไว้ ห้ามใครแตะต้อง",
+                id: 9, pali: "อุปาทาน", icon: "lock", 
+                dhamma: "ความยึดมั่นถือมั่นอย่างเหนียวแน่นว่าเป็น 'ตัวกู ของกู' สิ่งนี้คือของฉัน ใครห้ามแตะ", 
                 scenarios: {
-                    FOOD: "ยึดว่า 'ฉัน' หิว, นี่คืออาหาร 'ของฉัน' ใครแย่งไม่ได้",
-                    SOCIAL: "ยึดว่า 'ตัวฉัน' ถูกด่า ศักดิ์ศรี 'ของฉัน' ถูกหยาม",
-                    SHOPPING: "ยึดว่าฉันต้องเป็นเจ้าของ จินตนาการว่าใส่แล้วเท่",
+                    FOOD: "ยึดว่า 'ฉัน' กำลังหิว นี่คืออาหาร 'ของฉัน' ใครจะมาแย่งไม่ได้",
+                    SOCIAL: "ยึดว่า 'ตัวฉัน' กำลังถูกด่า ศักดิ์ศรี 'ของฉัน' ถูกเหยียบย่ำ ต้องปกป้องตัวตน",
+                    SHOPPING: "ยึดว่าฉันต้องเป็นเจ้าของสิ่งนี้ให้ได้ จินตนาการภาพตัวเองตอนใช้ของชิ้นนั้นแล้ว",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 10, pali: "ภพ", tech: "Virtual Environment", icon: "database", 
-                dhamma: "ภาวะที่จิตก่อตัว (พฤติกรรม)", 
-                analogy: "เหมือนสร้างโลกเสมือน (Sandbox) ไว้รองรับ",
+                id: 10, pali: "ภพ", icon: "database", 
+                dhamma: "สภาวะจิตที่ก่อตัวสมบูรณ์ เตรียมพร้อมที่จะแสดงพฤติกรรมออกมา (สร้างโลกจำลองไว้แล้ว)", 
                 scenarios: {
-                    FOOD: "จิตหมกมุ่นอยู่กับการกิน ขับรถไปร้าน สั่งอาหาร",
-                    SOCIAL: "นิ้วเริ่มพิมพ์ด่ากลับ ใจร้อนรุ่มเป็นไฟ (นรก)",
-                    SHOPPING: "กดใส่ตะกร้า เตรียมรูดบัตร ใจไปอยู่ที่ของแล้ว",
+                    FOOD: "จิตหมกมุ่นอยู่กับการกินอย่างเต็มที่ สั่งอาหาร ขับรถไปร้าน",
+                    SOCIAL: "นิ้วเริ่มพิมพ์ด่ากลับ จิตใจร้อนรุ่มเหมือนอยู่ในไฟนรก",
+                    SHOPPING: "กดสินค้าใส่ตะกร้า เตรียมรหัสผ่านรูดบัตรเครดิต ใจไปอยู่ที่ของแล้ว",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 11, pali: "ชาติ", tech: "Instance Running", icon: "play", 
-                dhamma: "การเกิดของตัวตนผู้เสวยผล", 
-                analogy: "เหมือนกด Run โปรแกรม ตัวละครเริ่มเล่นจริง",
+                id: 11, pali: "ชาติ", icon: "play", 
+                dhamma: "การเกิดของ 'ตัวตน' ผู้กระทำและผู้เสวยผลอย่างแท้จริง พฤติกรรมถูกแสดงออกไปแล้ว", 
                 scenarios: {
-                    FOOD: "ลงมือทานอย่างเอร็ดอร่อย (ตัวกินเกิดแล้ว)",
-                    SOCIAL: "โพสต์ด่ากลับไปแล้ว (ตัวโกรธทำงานสมบูรณ์)",
-                    SHOPPING: "จ่ายเงิน ได้ของมาถือ (ตัวเจ้าของเกิดแล้ว)",
+                    FOOD: "ลงมือทานอย่างเอร็ดอร่อย (ตัวตนคนกินเกิดขึ้นสมบูรณ์)",
+                    SOCIAL: "กด Enter โพสต์ด่ากลับไปเรียบร้อย (ตัวตนคนโกรธทำงานสมบูรณ์)",
+                    SHOPPING: "โอนเงินสำเร็จ ได้ของมาถือในมือ (ตัวตนเจ้าของเกิดขึ้นสมบูรณ์)",
                     CUSTOM: ""
                 }
             },
             { 
-                id: 12, pali: "ชรามรณะ", tech: "System Crash", icon: "x-circle", 
-                dhamma: "ความเสื่อมสลายและความทุกข์", 
-                analogy: "เหมือนเครื่องร้อน System Crash หรือ Error",
+                id: 12, pali: "ชรามรณะ", icon: "x-circle", 
+                dhamma: "ความเสื่อมสลาย ความพลัดพราก ความผิดหวัง อันเป็นปลายทางของความทุกข์ที่หลีกเลี่ยงไม่ได้", 
                 scenarios: {
-                    FOOD: "อิ่มจนอึดอัด, เงินหมด, อ้วนขึ้น, หรืออาหารหมดแล้วเสียดาย",
-                    SOCIAL: "ทะเลาะกันบานปลาย, เสียสุขภาพจิต, โดนแบน, เสียใจภายหลัง",
-                    SHOPPING: "เงินหมด, ของตกรุ่น, เบื่อของเก่า, เป็นหนี้บัตรเครดิต",
+                    FOOD: "กินจนอิ่มจุกทรมาน, น้ำหนักขึ้น, หรือพอกินหมดก็รู้สึกเสียดาย (สุขนั้นดับไป)",
+                    SOCIAL: "เรื่องราวบานปลาย, เสียสุขภาพจิต, เสียความสัมพันธ์, หรือมานั่งเสียใจภายหลัง",
+                    SHOPPING: "เงินหมดบัญชี, ของตกรุ่นอย่างรวดเร็ว, เบื่อของชิ้นนั้นแล้ว, ต้องมานั่งใช้หนี้",
                     CUSTOM: ""
                 }
             }
         ];
 
         const modeInfo = {
-            'LOOP': { targetId: 0, title: 'โหมดวัฏฏะ (Auto-Pilot)', desc: 'วัตถุประสงค์: แสดงให้เห็นวงจรปกติของจิตที่ไหลไปตามกิเลส สร้างทุกข์วนเวียนไม่รู้จบ', color: 'text-yellow-400', border: 'border-l-yellow-500' },
-            'INTERNAL': { targetId: 2, title: 'โหมดหยุดปรุงแต่ง (Stop Fabrication)', desc: 'วัตถุประสงค์: เพื่อฝึก "ตัดกรรม" ที่ต้นเหตุ คือการระงับเจตนาปรุงแต่ง (สังขาร) ไม่ให้ส่งผลสืบเนื่อง', color: 'text-orange-400', border: 'border-l-orange-500' },
-            'GATEWAY': { targetId: 6, title: 'โหมดสักแต่ว่ารู้ (Sense Restraint)', desc: 'วัตถุประสงค์: เพื่อฝึก "สำรวมอินทรีย์" ป้องกันข้อมูลขยะเข้าสู่จิต หยุดแค่การเห็น/ได้ยิน (ผัสสะ)', color: 'text-cyan-400', border: 'border-l-cyan-500' },
-            'VEDANA': { targetId: 7, title: 'โหมดรู้ทันเวทนา (Mindfulness)', desc: 'วัตถุประสงค์: เพื่อฝึก "อุเบกขา" รู้ทันความรู้สึกสุข/ทุกข์ แต่ไม่หลงยินดีหรือยินร้ายไปกับมัน', color: 'text-purple-400', border: 'border-l-purple-500' },
-            'TANHA': { targetId: 8, title: 'โหมดดับตัณหา (Fading of Craving)', desc: 'วัตถุประสงค์: เพื่อฝึก "วิราคะ" คลายความกำหนัด ความอยากได้/อยากมี อันเป็นเหตุแห่งการยึดติด', color: 'text-red-400', border: 'border-l-red-500' },
-            'VOID': { targetId: -1, title: 'โหมดสลัดคืน (Total Release)', desc: 'วัตถุประสงค์: เพื่อเข้าถึง "สุญญตา" (ความว่าง) คืนธรรมชาติตามความเป็นจริง ไม่ยึดถือสิ่งใดว่าเป็นเรา', color: 'text-white', border: 'border-l-white' }
+            'LOOP': { targetId: 0, title: 'โหมดวัฏฏะ (Samsara Cycle)', desc: 'แสดงวงจรปกติที่ไหลไปตามกิเลส ปล่อยให้จิตปรุงแต่งจนเกิดความทุกข์วนเวียนไม่จบสิ้น', color: 'text-yellow-400', border: 'border-l-yellow-500' },
+            'INTERNAL': { targetId: 2, title: 'โหมดหยุดปรุงแต่ง (Stop Fabrication)', desc: 'ตัดที่ "สังขาร" มีสติระงับความคิดปรุงแต่ง ไม่ปล่อยให้เจตนาก่อตัวเป็นกรรม', color: 'text-orange-400', border: 'border-l-orange-500' },
+            'GATEWAY': { targetId: 6, title: 'โหมดสักแต่ว่ารู้ (Sense Restraint)', desc: 'ตัดที่ "ผัสสะ" สำรวมอินทรีย์ ตาเห็นรูปก็สักแต่ว่าเห็น ไม่ดึงเข้ามาปรุงแต่งต่อ', color: 'text-cyan-400', border: 'border-l-cyan-500' },
+            'VEDANA': { targetId: 7, title: 'โหมดรู้ทันเวทนา (Mindfulness)', desc: 'ตัดที่ "เวทนา" มีสติรู้ทันความรู้สึกสุข/ทุกข์ วางใจเป็นอุเบกขา ไม่หลงยินดียินร้าย', color: 'text-purple-400', border: 'border-l-purple-500' },
+            'TANHA': { targetId: 8, title: 'โหมดดับตัณหา (Fading of Craving)', desc: 'ตัดที่ "ตัณหา" เมื่อเผลอชอบไปแล้ว ให้รีบคลายความกำหนัด ดับความทะยานอยากก่อนจะยึดติด', color: 'text-red-400', border: 'border-l-red-500' },
+            'VOID': { targetId: -1, title: 'โหมดสลัดคืน (System Void)', desc: 'เข้าถึง "สุญญตา" คืนธรรมชาติตามความเป็นจริง เข้าใจกฎอนิจจัง ไม่ยึดถือสิ่งใดว่าเป็นเรา', color: 'text-white', border: 'border-l-white' }
         };
 
-        const CREDIT_TEXT = `ขอขอบพระคุณครูอาจาร์ยทุกๆท่าน ที่เผยแพร่วิชาความรู้ให้เกิดซึ่งปัญญา เพื่อให้ชีวิตนี้ได้หลุดพ้นจากความทุกข์ หรือ หลุดพ้นจากวัฏจักรเวียนไหว้ตายเกิด โดยการละกิเลศให้ได้มากที่สุด\n\nหากมีข้อมูลเนื้อหาใดผิดพลาดต้องขออภัยมา ณ ที่นี่ด้วย\n\nสร้างสรรค์โดย : เกียรติศักดิ์ ทีปวํโส`;
+        const CREDIT_TEXT = `ขอขอบพระคุณครูอาจารย์ทุกๆ ท่าน ที่เผยแพร่วิชาความรู้ให้เกิดซึ่งปัญญา เพื่อให้ชีวิตนี้ได้หลุดพ้นจากความทุกข์ หรือหลุดพ้นจากวัฏจักรเวียนว่ายตายเกิด โดยการมีสติรู้ทันตามความเป็นจริง (อนิจจัง)\n\nสร้างสรรค์โดย : หลวงพี่บีม (เกียรติศักดิ์ ทีปวํโส)`;
 
         let currentMode = 'LOOP';
         let currentScenario = 'NONE';
         let idx = 0;
         let rotationAngle = 0;
-        const CYCLE_TIME = 4500;
-        let startTime = Date.now();
-        let isDragging = false;
-        let startX = 0;
-        let startAngle = 0;
         let fadeTimeout;
 
         function init() {
             renderCircularNodes();
-            setupInteractions();
             setMode('LOOP');
-            animate();
             window.addEventListener('resize', renderCircularNodes);
         }
 
         function renderCircularNodes() {
             const container = document.getElementById('cycle-container');
             const outer = document.getElementById('cycle-outer');
-            const svgLines = document.getElementById('svg-lines');
             
             container.innerHTML = '';
             const size = outer.clientWidth;
             const radius = size / 3.0;
             const centerX = size / 2;
             const centerY = size / 2;
-
-            let lines = '';
 
             nidanas.forEach((n, i) => {
                 const angle = (i * 30 - 90) * (Math.PI / 180);
@@ -489,76 +490,38 @@
                     <div id="cut-${i}" class="absolute -top-1 -right-1 opacity-0 transition-all scale-50 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow-lg pointer-events-none">CUT</div>
                 `;
                 container.appendChild(node);
-
-                const nextAngle = ((i + 1) * 30 - 90) * (Math.PI / 180);
-                const nextX = centerX + radius * Math.cos(nextAngle);
-                const nextY = centerY + radius * Math.sin(nextAngle);
-                lines += `<line x1="${x}" y1="${y}" x2="${nextX}" y2="${nextY}" stroke="rgba(255,255,255,0.05)" stroke-width="1" />`;
             });
             
-            svgLines.innerHTML = lines;
             lucide.createIcons();
-        }
-
-        function setupInteractions() {
-            const outer = document.getElementById('cycle-outer');
-            const container = document.getElementById('cycle-container');
-
-            const startDrag = (e) => {
-                isDragging = true;
-                container.classList.remove('snapping');
-                startX = e.clientX || e.touches[0].clientX;
-                startAngle = rotationAngle;
-            };
-
-            const doDrag = (e) => {
-                if (!isDragging) return;
-                e.preventDefault();
-                const currentX = e.clientX || e.touches[0].clientX;
-                const deltaX = currentX - startX;
-                rotationAngle = startAngle + (deltaX * 0.8);
-                container.style.transform = `rotate(${rotationAngle}deg)`;
-                
-                document.querySelectorAll('.cycle-node').forEach(node => {
-                    node.style.transform = `rotate(${-rotationAngle}deg)`;
-                });
-            };
-
-            const endDrag = () => {
-                isDragging = false;
-                container.classList.add('snapping');
-                startTime = Date.now(); 
-            };
-
-            outer.addEventListener('mousedown', startDrag);
-            window.addEventListener('mousemove', doDrag);
-            window.addEventListener('mouseup', endDrag);
-            outer.addEventListener('touchstart', startDrag);
-            window.addEventListener('touchmove', doDrag);
-            window.addEventListener('touchend', endDrag);
         }
 
         function setMode(mode) {
             currentMode = mode;
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-btn-mode').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-' + mode).classList.add('active');
             
             const info = modeInfo[mode];
             document.getElementById('mode-dot').className = `w-3 h-3 rounded-full shadow-[0_0_12px_currentColor] transition-colors duration-500 ${info.color.replace('text-', 'bg-')}`;
-            document.getElementById('hub-icon').className = `transition-colors duration-500 ${info.color}`;
+            
+            const hubIcon = document.getElementById('hub-icon');
+            if (mode === 'VOID') {
+                hubIcon.innerHTML = `<i data-lucide="wind" class="w-8 h-8 text-white"></i>`;
+            } else {
+                hubIcon.innerHTML = `<i data-lucide="compass" class="w-8 h-8 ${info.color}"></i>`;
+            }
+            lucide.createIcons();
 
             const box = document.getElementById('mode-info-box');
-            box.className = `mode-info-container zen-panel border-l-4 p-3 shrink-0 ${info.border}`;
+            box.className = `mode-info-container zen-panel border-l-4 p-4 shrink-0 ${info.border}`;
             box.classList.remove('collapsed');
             document.getElementById('mode-title').innerText = info.title;
-            document.getElementById('mode-title').className = `text-sm font-bold mb-1 ${info.color}`;
+            document.getElementById('mode-title').className = `text-base font-bold mb-1 ${info.color}`;
             document.getElementById('mode-desc').innerText = info.desc;
 
             if(fadeTimeout) clearTimeout(fadeTimeout);
-            fadeTimeout = setTimeout(() => box.classList.add('collapsed'), 10000);
+            fadeTimeout = setTimeout(() => box.classList.add('collapsed'), 12000);
 
             idx = 0;
-            startTime = Date.now();
             updateUI();
         }
 
@@ -567,10 +530,40 @@
             updateUI();
         }
 
+        // --- Manual Navigation Logic ---
         function jumpTo(i) {
             if(currentMode === 'VOID') return;
             idx = i;
-            startTime = Date.now();
+            updateUI();
+        }
+
+        function nextNode() {
+            if (currentMode === 'VOID') return;
+            idx++;
+            
+            // Limit checking based on mode (Cut Point)
+            if (currentMode === 'INTERNAL' && idx > 1) idx = 0;
+            else if (currentMode === 'GATEWAY' && idx > 5) idx = 0;
+            else if (currentMode === 'VEDANA' && idx > 6) idx = 0;
+            else if (currentMode === 'TANHA' && idx > 7) idx = 0;
+            else if (idx > 11) idx = 0;
+            
+            updateUI();
+        }
+
+        function prevNode() {
+            if (currentMode === 'VOID') return;
+            idx--;
+            
+            if (idx < 0) {
+                // Wrap around based on mode
+                if (currentMode === 'INTERNAL') idx = 1;
+                else if (currentMode === 'GATEWAY') idx = 5;
+                else if (currentMode === 'VEDANA') idx = 6;
+                else if (currentMode === 'TANHA') idx = 7;
+                else idx = 11;
+            }
+            
             updateUI();
         }
 
@@ -579,35 +572,41 @@
             const info = modeInfo[currentMode];
             const scenarioBox = document.getElementById('scenario-box');
             
-            if (!isDragging) {
-                rotationAngle = -(idx * 30);
-                document.getElementById('cycle-container').style.transform = `rotate(${rotationAngle}deg)`;
+            // Handle Navigation Buttons Visibility
+            if (currentMode === 'VOID') {
+                document.getElementById('btn-prev').classList.add('opacity-30', 'pointer-events-none');
+                document.getElementById('btn-next').classList.add('opacity-30', 'pointer-events-none');
+            } else {
+                document.getElementById('btn-prev').classList.remove('opacity-30', 'pointer-events-none');
+                document.getElementById('btn-next').classList.remove('opacity-30', 'pointer-events-none');
             }
 
+            // Rotate Wheel
+            rotationAngle = -(idx * 30);
+            document.getElementById('cycle-container').style.transform = `rotate(${rotationAngle}deg)`;
+
+            // Right Panel Data
             if (currentMode === 'VOID') {
                 document.getElementById('active-pali').innerText = "สุญญตา";
-                document.getElementById('active-tech-label').innerText = "SYSTEM VOID";
-                document.getElementById('label-dhamma').innerText = "ความหมายทางธรรม";
-                document.getElementById('active-dhamma').innerText = "ความว่างจากตัวตน คืนสู่ธรรมชาติ ไม่มีผู้เสวยสุขและทุกข์";
-                document.getElementById('label-analogy').innerText = "กิตติกรรมประกาศ";
-                document.getElementById('icon-analogy').setAttribute('data-lucide', 'heart-handshake');
-                document.getElementById('active-analogy').innerText = CREDIT_TEXT;
-                document.getElementById('bg-icon-decor').innerHTML = `<i data-lucide="wind" class="w-48 h-48 text-white"></i>`;
+                document.getElementById('active-tech-label').innerText = "NIBBANA";
+                document.getElementById('label-dhamma').innerText = "สภาวะธรรม";
+                document.getElementById('active-dhamma').innerText = "ความว่างจากตัวตน คืนสู่ธรรมชาติ ไม่มีผู้เสวยสุขและทุกข์ (อนัตตา)";
+                
+                scenarioBox.classList.remove('hidden');
+                document.getElementById('label-scenario').innerText = "กิตติกรรมประกาศ";
+                document.getElementById('active-scenario').innerText = CREDIT_TEXT;
+                
+                document.getElementById('bg-icon-decor').innerHTML = `<i data-lucide="wind" class="w-64 h-64 text-white"></i>`;
                 document.getElementById('pid-display').innerText = "--";
-                scenarioBox.classList.add('hidden');
             } else {
                 document.getElementById('active-pali').innerText = activeData.pali;
-                document.getElementById('active-pali').className = `text-3xl md:text-4xl font-bold transition-all duration-300 leading-tight ${info.color}`;
-                document.getElementById('active-tech-label').innerText = activeData.tech;
+                document.getElementById('active-pali').className = `text-4xl md:text-5xl font-bold transition-all duration-300 leading-tight mt-2 ${info.color}`;
+                document.getElementById('active-tech-label').innerText = "STEP";
                 
                 document.getElementById('label-dhamma').innerText = "ความหมายทางธรรม";
                 document.getElementById('active-dhamma').innerText = activeData.dhamma;
                 
-                document.getElementById('label-analogy').innerText = "เปรียบเทียบทางเทคนิค";
-                document.getElementById('icon-analogy').setAttribute('data-lucide', 'monitor');
-                document.getElementById('active-analogy').innerText = activeData.analogy;
-                
-                document.getElementById('bg-icon-decor').innerHTML = `<i data-lucide="${activeData.icon}" class="w-48 h-48 text-white"></i>`;
+                document.getElementById('bg-icon-decor').innerHTML = `<i data-lucide="${activeData.icon}" class="w-64 h-64 text-white"></i>`;
                 document.getElementById('pid-display').innerText = (idx + 1).toString().padStart(2, '0') + "/12";
 
                 if (currentScenario !== 'NONE') {
@@ -615,12 +614,12 @@
                     let label = "สถานการณ์ตัวอย่าง";
                     let content = "...";
                     if (currentScenario === 'CUSTOM' && activeData.scenarios.CUSTOM) {
-                        label = "สถานการณ์ของคุณ";
+                        label = "ผลวิเคราะห์ปัญหาของคุณ (AI)";
                         content = activeData.scenarios.CUSTOM;
                     } else if (activeData.scenarios[currentScenario]) {
-                        if(currentScenario === 'FOOD') label = "ตัวอย่าง: เรื่องกิน";
-                        if(currentScenario === 'SOCIAL') label = "ตัวอย่าง: โซเชียล";
-                        if(currentScenario === 'SHOPPING') label = "ตัวอย่าง: ช้อปปิ้ง";
+                        if(currentScenario === 'FOOD') label = "ตัวอย่าง: เรื่องการกิน";
+                        if(currentScenario === 'SOCIAL') label = "ตัวอย่าง: ดราม่าโซเชียล";
+                        if(currentScenario === 'SHOPPING') label = "ตัวอย่าง: กิเลสช้อปปิ้ง";
                         content = activeData.scenarios[currentScenario];
                     }
                     document.getElementById('label-scenario').innerText = label;
@@ -631,6 +630,7 @@
             }
             lucide.createIcons();
 
+            // Wheel Nodes Color Logic
             nidanas.forEach((n, i) => {
                 const node = document.getElementById(`node-${i}`);
                 if(!node) return;
@@ -652,7 +652,7 @@
                 if (isTarget && currentMode !== 'VOID' && currentMode !== 'LOOP') {
                     node.classList.add('target-highlight');
                     node.style.borderColor = modeColorHex;
-                    node.style.boxShadow = `0 0 15px ${modeColorHex}40`;
+                    node.style.boxShadow = `0 0 20px ${modeColorHex}60`;
                     
                     icon.style.color = modeColorHex;
                     title.style.color = modeColorHex;
@@ -691,38 +691,6 @@
             return map[mode] || '#ffffff';
         }
 
-        function animate() {
-            if (currentMode === 'VOID') {
-                 document.getElementById('main-progress').style.width = '0%';
-                 requestAnimationFrame(animate);
-                 return;
-            }
-
-            const now = Date.now();
-            if(!isDragging) {
-                const elapsed = now - startTime;
-                const progress = Math.min((elapsed / CYCLE_TIME) * 100, 100);
-                const info = modeInfo[currentMode];
-
-                document.getElementById('main-progress').style.width = `${progress}%`;
-                document.getElementById('main-progress').className = `progress-bar ${info.color.replace('text-', 'bg-')}`;
-
-                if (elapsed >= CYCLE_TIME) {
-                    idx = (idx + 1) % 12;
-                    if (currentMode === 'INTERNAL' && idx > 1) idx = 0;
-                    else if (currentMode === 'GATEWAY' && idx > 5) idx = 0;
-                    else if (currentMode === 'VEDANA' && idx > 6) idx = 0;
-                    else if (currentMode === 'TANHA' && idx > 7) idx = 0;
-
-                    startTime = Date.now();
-                    updateUI();
-                }
-            } else {
-                startTime = Date.now(); 
-            }
-            requestAnimationFrame(animate);
-        }
-
         // --- AI Features ---
         function getStoredKey() {
             return localStorage.getItem('GEMINI_API_KEY') || apiKey;
@@ -730,12 +698,6 @@
 
         function openAIModal() {
             document.getElementById('ai-modal').classList.add('open');
-            const key = getStoredKey();
-            if(!key) {
-                document.getElementById('api-key-section').classList.remove('hidden');
-            } else {
-                document.getElementById('api-key-section').classList.add('hidden');
-            }
             document.getElementById('ai-input').focus();
         }
 
@@ -743,18 +705,34 @@
             document.getElementById('ai-modal').classList.remove('open');
         }
 
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('open');
+            document.getElementById('settings-api-key').value = localStorage.getItem('GEMINI_API_KEY') || "";
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('open');
+        }
+
+        function saveSettings() {
+            const key = document.getElementById('settings-api-key').value.trim();
+            if(key) {
+                localStorage.setItem('GEMINI_API_KEY', key);
+                alert("บันทึก API Key เรียบร้อยแล้ว (เจริญพร)");
+                closeSettings();
+            } else {
+                localStorage.removeItem('GEMINI_API_KEY');
+                alert("ล้างค่า API Key เดิมแล้ว จะกลับไปใช้ Key หลักของระบบ");
+                closeSettings();
+            }
+        }
+
         async function submitAI() {
             let currentApiKey = getStoredKey();
             
             if (!currentApiKey) {
-                const inputKey = document.getElementById('user-api-key').value.trim();
-                if(inputKey) {
-                    currentApiKey = inputKey;
-                    localStorage.setItem('GEMINI_API_KEY', currentApiKey);
-                } else {
-                    alert("กรุณาใส่ API Key ก่อนใช้งาน (ดูวิธีขอฟรีที่ลิงก์)");
-                    return;
-                }
+                alert("ระบบไม่พบ API Key กรุณากดรูปเฟืองมุมขวาบนเพื่อตั้งค่าครับ");
+                return;
             }
 
             const input = document.getElementById('ai-input').value.trim();
@@ -762,19 +740,23 @@
 
             const btn = document.getElementById('ai-submit-btn');
             const originalText = btn.innerHTML;
-            btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> กำลังวิเคราะห์...`;
+            btn.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> กำลังใช้สติพิจารณา...`;
             btn.disabled = true;
 
             try {
-                // เปลี่ยนโมเดลให้เป็น gemini-2.5-flash แทนรุ่นพรีวิวเก่าที่ถูกยกเลิกแล้ว
+                // Prompt adjusted for a natural, mindful tone suitable for a monk's tool
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${currentApiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
                             parts: [{
-                                text: `You are an expert in Buddhist Paticcasamuppada. Analyze: "${input}". 
-                                Return JSON object keys "1" to "12" with short Thai descriptions mapping the situation to each Nidana.`
+                                text: `You are an AI assistant acting as a mindful Dhamma tool for a Buddhist monk. 
+                                Analyze this real-life problem: "${input}". 
+                                Map it step-by-step to the 12 Nidanas of Paticcasamuppada.
+                                Tone: Compassionate, mindful, easy to understand, reflecting 'Anicca' (impermanence).
+                                Return ONLY a JSON object where keys are "1" to "12" and values are short Thai descriptions (max 1-2 sentences) of how that step manifests in the user's problem. 
+                                Example: { "1": "หลงลืมสติ ไม่เห็นว่าคำพูดของเขาเป็นเพียงลมปากที่เกิดแล้วดับไป...", "2": "ใจเริ่มปรุงแต่งความขุ่นเคือง..." }`
                             }]
                         }]
                     })
@@ -788,12 +770,16 @@
                 
                 if (jsonMatch) {
                     const result = JSON.parse(jsonMatch[0]);
-                    nidanas.forEach(n => n.scenarios.CUSTOM = result[n.id] || "-");
+                    nidanas.forEach(n => n.scenarios.CUSTOM = result[n.id] || "ไม่มีข้อมูลในส่วนนี้");
                     
                     const select = document.getElementById('scenario-select');
                     select.querySelector('option[value="CUSTOM"]').hidden = false;
                     select.value = "CUSTOM";
+                    
+                    // Reset to mode LOOP and start at 0 to read from the beginning
+                    setMode('LOOP');
                     changeScenario("CUSTOM");
+                    
                     closeAIModal();
                 } else {
                     throw new Error("AI format error");
@@ -801,7 +787,7 @@
 
             } catch (error) {
                 console.error(error);
-                alert("เกิดข้อผิดพลาด: " + error.message);
+                alert("เกิดข้อผิดพลาดในการพิจารณาธรรม: " + error.message);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -810,7 +796,6 @@
         }
 
         window.onload = init;
-        window.addEventListener('resize', renderCircularNodes);
     </script>
 </body>
 </html>
