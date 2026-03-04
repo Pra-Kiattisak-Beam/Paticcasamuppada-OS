@@ -175,11 +175,11 @@
                 <option value="FOOD">🍗 เรื่องกิน (หิว/อยาก)</option>
                 <option value="SOCIAL">📱 โซเชียล (ดราม่า/โกรธ)</option>
                 <option value="SHOPPING">🛍️ ช้อปปิ้ง (อยากได้ของ)</option>
-                <option value="CUSTOM" hidden class="text-emerald-400 font-bold">✨ ปัญหาของคุณ (AI วิเคราะห์)</option>
+                <option value="CUSTOM" hidden class="text-emerald-400 font-bold">✨ สถานการณ์ตัวอย่าง</option>
             </select>
         </div>
         <button onclick="openAIModal()" class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-500 text-white hover:from-emerald-500 hover:to-teal-400 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02]">
-            <i data-lucide="sparkles" class="w-4 h-4"></i> ให้ AI ช่วยวิเคราะห์ปัญหาของคุณ
+            <i data-lucide="sparkles" class="w-4 h-4"></i> ให้ระบบธรรมาภิวัฒน์ AI วิเคราะห์ปัญหาของคุณ
         </button>
     </div>
 
@@ -272,7 +272,7 @@
     <div id="ai-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="sparkles" class="w-6 h-6 text-emerald-400"></i> ธรรมาภิวัตน์ AI</h3>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="sparkles" class="w-6 h-6 text-emerald-400"></i> ระบบธรรมาภิวัฒน์ AI</h3>
                 <button onclick="closeAIModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             
@@ -448,10 +448,9 @@
 
         function renderCircularNodes() {
             const container = document.getElementById('cycle-container');
-            const outer = document.getElementById('cycle-outer');
             
             container.innerHTML = '';
-            const size = outer.clientWidth;
+            const size = document.getElementById('cycle-outer').clientWidth;
             const radius = size / 3.0;
             const centerX = size / 2;
             const centerY = size / 2;
@@ -514,7 +513,6 @@
             updateUI();
         }
 
-        // --- Manual Navigation Logic ---
         function jumpTo(i) {
             if(currentMode === 'VOID') return;
             idx = i;
@@ -593,7 +591,7 @@
                     let label = "สถานการณ์ตัวอย่าง";
                     let content = "...";
                     if (currentScenario === 'CUSTOM' && activeData.scenarios.CUSTOM) {
-                        label = "ผลวิเคราะห์ปัญหาของคุณ (AI)";
+                        label = "สถานการณ์ตัวอย่าง";
                         content = activeData.scenarios.CUSTOM;
                     } else if (activeData.scenarios[currentScenario]) {
                         if(currentScenario === 'FOOD') label = "ตัวอย่าง: เรื่องการกิน";
@@ -667,7 +665,6 @@
             return map[mode] || '#ffffff';
         }
 
-        // --- AI Features ---
         function openAIModal() {
             document.getElementById('ai-modal').classList.add('open');
             document.getElementById('ai-input').focus();
